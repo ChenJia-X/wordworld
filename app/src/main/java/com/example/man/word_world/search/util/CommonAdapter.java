@@ -17,7 +17,7 @@ public abstract class CommonAdapter<T> extends BaseAdapter{
     protected List<T> mData;
     protected int mLayoutId;
 
-    public CommonAdapter(Context context,List<T> data,int layoutId){
+    public CommonAdapter(Context context,int layoutId,List<T> data){
         mContext = context;
         mData = data;
         mLayoutId = layoutId;
@@ -38,6 +38,7 @@ public abstract class CommonAdapter<T> extends BaseAdapter{
         return i;
     }
 
+    //position就是ListView中的Item的序号，也就是index
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = ViewHolder.getHolder(mContext,convertView,mLayoutId,parent,position);

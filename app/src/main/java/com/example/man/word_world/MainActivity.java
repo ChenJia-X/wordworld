@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     private Fragment_search fg1,fg2,fg3,fg4;
     private FragmentManager fManager;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         rb_search = (RadioButton) findViewById(R.id.rb_search);
         rb_search.setChecked(true);
     }
+
 
     //隐藏所有Fragment
     private void hideAllFragment(FragmentTransaction fragmentTransaction){

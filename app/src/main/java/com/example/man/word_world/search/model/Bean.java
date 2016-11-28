@@ -3,51 +3,20 @@ package com.example.man.word_world.search.model;
 /**
  * bean 类
  * Created by yetwish on 2015-05-11
+ * Changed by JC on 2016-11-17
  */
 
 public class Bean {
 
-    private int iconId;
-    private String title;
-    private String content;
-    private String comments;
+    private String spelling;
 
-    public Bean(int iconId, String title, String content, String comments) {
-        this.iconId = iconId;
-        this.title = title;
-        this.content = content;
-        this.comments = comments;
+    public Bean() {}
+
+    public String getWord() {
+        return spelling;
     }
 
-    public int getIconId() {
-        return iconId;
-    }
-
-    public void setIconId(int iconId) {
-        this.iconId = iconId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getComments() {
-        return comments;
-    }
-
-    public void setComments(String comments) {
-        this.comments = comments;
+    public void setWord(String word) {
+        this.spelling = word;
     }
 }

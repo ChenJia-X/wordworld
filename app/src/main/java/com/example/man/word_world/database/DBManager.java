@@ -1,0 +1,108 @@
+package com.example.man.word_world.database;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.widget.Toast;
+
+import com.example.man.word_world.R;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+
+/**
+ * Created by man on 2016/11/18.
+ */
+public class DBManager {
+    private SQLiteDatabase database;
+
+    // 定义数据库的存放路径
+    private final String DATABASE_PATH = android.os.Environment
+            .getExternalStorageDirectory().getAbsolutePath() + "/dictionary";
+    private final String DATABASE_FILENAME = "dictionary.db";
+
+    //历史搜索表,phe、pha为英式音标和美食音标
+    private static final String CREATE_HISTORY_SEARCH ="create table if not exists HistorySearch("
+            +"word_id integer primary key autoincrement,"
+            +"spelling string,"
+            +"phe string,"
+            +"phe_address sting,"
+            +"pha string,"
+            +"pha_address sting,"
+            +"meaning string,"
+            +"picture_address integer)";
+
+
+    public DBManager(Context context){
+        database=openDB(context);
+        //创建HistorySearch表
+        database.execSQL(CREATE_HISTORY_SEARCH);
+    }
+
+    public Cursor getdata(){
+        String sql="select english from t_words";
+        Cursor cursor=database.rawQuery(sql,null);
+        return cursor;
+    }
+
+    public Cursor getHistory(){
+        String sql="select spelling from HistorySearch";
+        Cursor cursor=database.rawQuery(sql,null);
+        return cursor;
+    }
+
+    public Cursor query(String[] word ){
+        String sql="select chinese from t-words where english=?";
+        Cursor cursor=database.rawQuery(sql,word);
+        return cursor;
+    }
+
+    public void closeDB(){
+        database.close();
+    }
+
+    public SQLiteDatabase openDB(Context context ) {
+        try {
+            // 获得dictionary.db文件的绝对路径
+            String databaseFilename = DATABASE_PATH + "/" + DATABASE_FILENAME;
+            File dir = new File(DATABASE_PATH);
+
+            // 如果/sdcard/dictionary目录不存在，创建这个目录
+            if (!dir.exists())
+                dir.mkdir();
+
+            // 如果在/sdcard/dictionary目录中不存在
+            // dictionary.db文件，则从res\raw目录中复制这个文件到
+            // SD卡的目录（/sdcard/dictionary）
+            if (!(new File(databaseFilename)).exists()) {
+
+                // 获得封装dictionary.db文件的InputStream对象
+                InputStream is = context.getResources().openRawResource(
+                        R.raw.dictionary);
+                FileOutputStream fos = new FileOutputStream(databaseFilename);
+                byte[] buffer = new byte[8192];
+                int count = 0;
+                // 开始复制dictionary.db文件
+                while ((count = is.read(buffer)) > 0) {
+
+                    fos.write(buffer, 0, count);
+                }
+                // 关闭文件流
+                fos.close();
+                is.close();
+            }
+
+            // 打开/sdcard/dictionary目录中的dictionary.db文件
+            SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(
+                    databaseFilename, null);
+            return database;
+
+        } catch (Exception e) {
+
+        }
+        // 如果打开出错，则返回null
+        return null;
+    }
+
+}
