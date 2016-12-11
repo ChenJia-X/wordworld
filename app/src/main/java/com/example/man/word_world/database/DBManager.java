@@ -1,5 +1,6 @@
 package com.example.man.word_world.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,12 +11,15 @@ import com.example.man.word_world.R;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by man on 2016/11/18.
  */
 public class DBManager {
     private SQLiteDatabase database;
+    private int HISTORY_SIZE=20;
 
     // 定义数据库的存放路径
     private final String DATABASE_PATH = android.os.Environment
@@ -23,15 +27,15 @@ public class DBManager {
     private final String DATABASE_FILENAME = "dictionary.db";
 
     //历史搜索表,phe、pha为英式音标和美食音标
-    private static final String CREATE_HISTORY_SEARCH ="create table if not exists HistorySearch("
-            +"word_id integer primary key autoincrement,"
-            +"spelling string,"
-            +"phe string,"
+    /*+"phe string,"
             +"phe_address sting,"
             +"pha string,"
             +"pha_address sting,"
             +"meaning string,"
-            +"picture_address integer)";
+            +"picture_address integer)"*/
+    private static final String CREATE_HISTORY_SEARCH ="create table if not exists HistorySearch("
+            +" spelling string primary key,"
+            +" time integer)";
 
 
     public DBManager(Context context){
@@ -40,16 +44,49 @@ public class DBManager {
         database.execSQL(CREATE_HISTORY_SEARCH);
     }
 
-    public Cursor getdata(){
+    public Cursor getWordsData(){
         String sql="select english from t_words";
         Cursor cursor=database.rawQuery(sql,null);
         return cursor;
     }
 
-    public Cursor getHistory(){
-        String sql="select spelling from HistorySearch";
+    public Cursor getHistoryData(){
+        //按照查询时间降序排列
+        String sql="select spelling from HistorySearch order by time DESC";
         Cursor cursor=database.rawQuery(sql,null);
         return cursor;
+    }
+
+    public void refreshHistoryData(String text){
+        Cursor cursor=database.rawQuery("select * from HistorySearch order by time DESC",null);
+        int count=cursor.getCount();
+        //判断是否有重复的查询单词，有则删除
+        while(cursor.moveToNext()){
+            int i=cursor.getColumnIndex("spelling");
+            if (cursor.getString(i).equals(text)){
+                database.execSQL("delete from HistorySearch where spelling=?",new String[]{text});
+                //database.delete("HistorySearch","spelling=?",new String[]{text});
+                count-=1;
+                break;
+            }
+        }
+        //如果超出history的大小，则删除最早的一个单词
+        if (count>=HISTORY_SIZE){
+            cursor.moveToLast();
+            database.execSQL("delete from HistorySearch where spelling=?",new String[]{cursor.getString(cursor.getColumnIndex("spelling"))});
+            //database.delete("HistorySearch","spelling=?",new String[] {cursor.getString(cursor.getColumnIndex("spelling"))});
+        }
+        //获取当前系统时间，time为1970.1.1以来的毫秒数
+        Date date=new Date(System.currentTimeMillis());
+        long time=date.getTime();
+        //将单词插入表中
+        database.execSQL("insert into HistorySearch(spelling,time) values(?,?)",new Object[]{text,time});
+        /*ContentValues contentValues=new ContentValues();
+        contentValues.put("spelling",text);
+        contentValues.put("time",time);
+        database.insert("HistorySearch",null,contentValues);
+        contentValues.clear();*/
+        cursor.close();
     }
 
     public Cursor query(String[] word ){
