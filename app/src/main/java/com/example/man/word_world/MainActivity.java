@@ -7,14 +7,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import com.example.man.word_world.Recite.Fragment_recite;
+import com.example.man.word_world.danciben.Fragment_wordsbook;
 import com.example.man.word_world.search.Fragment_search;
+import com.example.man.word_world.user.Fragment_user;
 
 public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener {
     private RadioGroup rg_tab_bar;
     private RadioButton rb_search;
 
     //Fragment Object
-    private Fragment_search fg1,fg2,fg3,fg4;
+    private Fragment_search fg1;
+    private Fragment_wordsbook fg2;
+    private Fragment_recite fg3;
+    private Fragment_user fg4;
     private FragmentManager fManager;
 
 
@@ -54,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                 break;
             case R.id.rb_study:
                 if(fg2 == null){
-                    fg2 = new Fragment_search();
+                    fg2 = new Fragment_wordsbook();
                     fTransaction.add(R.id.ly_content,fg2);
                 }else{
                     fTransaction.show(fg2);
@@ -62,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                 break;
             case R.id.rb_test:
                 if(fg3 == null){
-                    fg3 = new Fragment_search();
+                    fg3 = new Fragment_recite();
                     fTransaction.add(R.id.ly_content,fg3);
                 }else{
                     fTransaction.show(fg3);
@@ -70,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                 break;
             case R.id.rb_setting:
                 if(fg4 == null){
-                    fg4 = new Fragment_search();
+                    fg4 = new Fragment_user();
                     fTransaction.add(R.id.ly_content,fg4);
                 }else{
                     fTransaction.show(fg4);

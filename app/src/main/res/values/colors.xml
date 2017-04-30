@@ -24,4 +24,9 @@
     <color name="btn_press_color">#5677fc</color>
     <color name="btn_pressed_color">#3ca0ec</color>
 
+    //yueci
+    <color name="text_color">#ff3d63db</color>
+    <color name="circul_color">#ffdadada</color>
+    <color name="background">#fff5f6f0</color>
+
 </resources>

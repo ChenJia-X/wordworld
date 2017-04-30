@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/dialog_back"
+    android:layout_width="fill_parent"
+    android:layout_height="100.0dip"
+    android:layout_margin="20.0dip">
+
+    <LinearLayout android:id="@+id/dialog_text_ask"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="55.0dip"
+        android:layout_weight="1.0">
+
+        <TextView android:id="@+id/dialog_text"
+            android:textSize="20.0sp"
+            android:textColor="#ff13b6fa"
+            android:gravity="center"
+            android:background="@android:color/transparent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0" />
+
+        <ImageView android:background="#ff56b6fa"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="20.0" />
+    </LinearLayout>
+
+    <LinearLayout android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.3"
+        android:layout_below="@id/dialog_text_ask"
+        android:layout_alignParentBottom="true">
+
+        <Button android:textSize="20.0sp"
+            android:id="@+id/dialog_confirm"
+            android:background="@android:color/transparent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="确定"
+            android:textColor="@color/bg_black"
+            android:layout_weight="1.0" />
+
+        <Button android:id="@+id/dialog_cancel"
+            android:textSize="20.0sp"
+            android:background="@android:color/transparent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="取消"
+            android:textColor="@color/bg_black"
+            android:layout_weight="1.0" />
+    </LinearLayout>
+
+</RelativeLayout>

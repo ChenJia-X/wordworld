@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffe5e6e0">
+
+    <RelativeLayout
+        android:id="@+id/AdLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal" />
+
+    <TextView
+        android:id="@+id/wrong_text_word"
+        android:layout_width="fill_parent"
+        android:layout_height="40.0dip"
+        android:layout_marginBottom="3.0dip"
+        android:layout_marginLeft="22.0dip"
+        android:layout_marginRight="22.0dip"
+        android:layout_marginTop="31.0dip"
+        android:gravity="center_vertical"
+        android:text="fabulous"
+        android:textColor="#ff3b3c3d"
+        android:textSize="24.0sp"
+        android:textStyle="bold" />
+    <!--注释掉了这条语句android:layout_below="@id/edit_text_dict_search_bar" -->
+
+    <ImageButton
+        android:id="@+id/wrong_image_btn_back_cusor"
+        android:layout_width="60.0dip"
+        android:layout_height="40.0dip"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/wrong_text_word"
+        android:layout_marginRight="20.0dip"
+        android:background="@android:color/transparent"
+        android:paddingBottom="2.0dip"
+        android:paddingTop="2.0dip"
+        android:scaleType="fitCenter"
+        android:src="@drawable/back_to_recite" />
+
+    <RelativeLayout
+        android:id="@id/phonetic_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="40.0dip"
+        android:layout_below="@id/wrong_text_word"
+        android:layout_marginLeft="22.0dip">
+
+        <ImageButton
+            android:id="@+id/wrong_recite_horn_accent_eng"
+            android:layout_width="30.0dip"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="7.0dip"
+            android:layout_marginTop="7.0dip"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/horn_dict" />
+
+        <TextView
+            android:id="@+id/wrong_text_phosymbol_eng"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toRightOf="@id/wrong_recite_horn_accent_eng"
+            android:gravity="center_vertical"
+            android:text="英[fanted]"
+            android:textColor="#ff6c6c6c"
+            android:textSize="14.0sp" />
+
+        <TextView
+            android:id="@+id/wrong_recite_phosymbol_divider"
+            android:layout_width="25.0dip"
+            android:layout_height="fill_parent"
+            android:layout_toRightOf="@id/wrong_text_phosymbol_eng"
+            android:gravity="center"
+            android:text="/"
+            android:textColor="#ff6c6c6c"
+            android:textSize="14.0sp" />
+
+        <ImageButton
+            android:id="@+id/wrong_recite_horn_accent_usa"
+            android:layout_width="30.0dip"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="7.0dip"
+            android:layout_marginTop="7.0dip"
+            android:layout_toRightOf="@id/wrong_recite_phosymbol_divider"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/horn_dict" />
+
+        <TextView
+            android:id="@+id/wrong_text_phosymbol_usa"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toRightOf="@id/wrong_recite_horn_accent_usa"
+            android:gravity="center_vertical"
+            android:text="美[fan'ted]"
+            android:textColor="#ff6c6c6c"
+            android:textSize="14.0sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/recite_interpret_divider"
+        android:layout_width="fill_parent"
+        android:layout_height="20.0dip"
+        android:layout_below="@id/phonetic_bar"
+        android:layout_marginLeft="10.0dip"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="30.0dip"
+            android:layout_height="fill_parent"
+            android:src="@drawable/right_cursor" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center_vertical"
+            android:text="基本释义"
+            android:textColor="#ff00a2dc"
+            android:textSize="14.0sp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rel_wrong_interpret_back"
+        android:layout_width="fill_parent"
+        android:layout_height="180.0dip"
+        android:layout_below="@id/recite_interpret_divider"
+        android:layout_margin="10.0dip"
+        android:background="@drawable/layer_list_dict_item_back"
+        android:padding="5.0dip">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.5"
+            android:orientation="vertical"
+            android:paddingLeft="12.0dip">
+
+            <TextView
+                android:id="@+id/wrong_text_interpret"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:gravity="center_vertical"
+                android:maxLines="2"
+                android:paddingRight="3.0dip"
+                android:text="哈哈"
+                android:textColor="#ff24a2c3"
+                android:textSize="19.0sp" />
+
+            <TextView
+                android:id="@+id/wrong_text_sentence"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:gravity="center_vertical"
+                android:maxLines="3"
+                android:paddingRight="3.0dip"
+                android:textColor="#ff101010"
+                android:textSize="13.0dip" />
+
+            <TextView
+                android:id="@+id/wrong_text_sentence_in_chinese"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:maxLines="3"
+                android:paddingRight="3.0dip"
+                android:textColor="#ff101010"
+                android:textSize="13.0dip" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/recite_sentence_divider"
+        android:layout_width="fill_parent"
+        android:layout_height="20.0dip"
+        android:layout_below="@id/rel_wrong_interpret_back"
+        android:layout_marginLeft="10.0dip"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="2.0">
+
+            <ImageView
+                android:layout_width="30.0dip"
+                android:layout_height="fill_parent"
+                android:src="@drawable/right_cursor" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="center_vertical"
+                android:text="其它选项"
+                android:textColor="#ff00a2dc"
+                android:textSize="14.0sp" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0">
+
+            <ImageView
+                android:id="@+id/recite_jinshan_ico"
+                android:layout_width="30.0dip"
+                android:layout_height="fill_parent"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15.0dip"
+                android:src="@drawable/jinshan_ico" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_toLeftOf="@id/recite_jinshan_ico"
+                android:gravity="bottom"
+                android:text="supported by iCIBA"
+                android:textColor="#ff6c6c6c"
+                android:textSize="10.0sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/recite_wrong_other_interpret"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/recite_sentence_divider"
+        android:layout_marginLeft="10.0dip"
+        android:layout_marginRight="10.0dip"
+        android:layout_marginTop="10.0dip"
+        android:background="@drawable/layer_list_dict_item_back"
+        android:orientation="vertical"
+        android:padding="10.0dip">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:background="@android:color/transparent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/wrong_text_other_word_1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.2"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:textColor="#ff24a2c3"
+                android:textSize="20.0dip"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/wrong_text_other_interpret_1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:gravity="left|center"
+                android:singleLine="true"
+                android:textColor="#ff101010"
+                android:textSize="17.0dip" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:background="@android:color/transparent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/wrong_text_other_word_2"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.2"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:textColor="#ff24a2c3"
+                android:textSize="20.0dip"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/wrong_text_other_interpret_2"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:gravity="left|center"
+                android:singleLine="true"
+                android:textColor="#ff101010"
+                android:textSize="17.0dip" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:background="@android:color/transparent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/wrong_text_other_word_3"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.2"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:textColor="#ff24a2c3"
+                android:textSize="20.0dip"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/wrong_text_other_interpret_3"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:textColor="#ff101010"
+                android:textSize="17.0dip" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

@@ -3,8 +3,11 @@ package com.example.man.word_world.search;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -26,9 +29,11 @@ import com.example.man.word_world.database.DBManager;
 import com.example.man.word_world.search.model.Bean;
 import com.example.man.word_world.search.util.CommonAdapter;
 import com.example.man.word_world.search.util.ViewHolder;
+import com.example.man.word_world.search.wordcontainer.Dict;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.Manifest;
 
 /**
  * Created by man on 2016/11/27.
@@ -55,27 +60,17 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
      */
     private ListView lvResults;
 
-    /**
-     * 热搜框列表adapter
-     */
-    private CommonAdapter<Bean> historyAdapter;
-
-    /**
-     * 自动补全列表adapter
-     */
-    private CommonAdapter<Bean> autoCompleteAdapter;
-
-    /**
-     * 搜索结果列表adapter
-     */
-    private CommonAdapter<Bean> resultAdapter;
-
     private List<Bean> dbData;
 
     /**
-     * 热搜版数据
+     * 搜索历史数据
      */
     private List<Bean> historyData;
+
+    /**
+     * 搜索历史数据adapter
+     */
+    private CommonAdapter<Bean> historyAdapter;
 
     /**
      * 搜索过程中自动补全数据
@@ -83,9 +78,19 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
     private List<Bean> autoCompleteData;
 
     /**
+     * 自动补全列表adapter
+     */
+    private CommonAdapter<Bean> autoCompleteAdapter;
+
+    /**
      * 搜索结果的数据
      */
     private List<Bean> resultData;
+
+    /**
+     * 搜索结果列表adapter
+     */
+    private CommonAdapter<Bean> resultAdapter;
 
     /**
      * 默认提示框显示项的个数
@@ -119,6 +124,11 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
      */
     private void initData() {
         //创建、访问数据库
+        /*if(ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                !=PackageManager.PERMISSION_GRANTED){
+            requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+        }*/
+
         dbManager =new DBManager(getActivity());
         //从数据库获取数据
         getWordsData();
@@ -127,7 +137,7 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
         //初始化自动补全数据
         getAutoCompleteData(null);
         //初始化搜索结果数据
-        getResultData(null);
+        //getResultData(null);
     }
 
     /**
@@ -201,12 +211,13 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
             };
         } else {
             autoCompleteAdapter.notifyDataSetChanged();
-        }    }
+        }
+    }
 
     /**
      * 获取搜索结果data和adapter
      */
-    private void getResultData(String text) {
+    /*private void getResultData(String text) {
         if (resultData == null) {
             // 初始化
             resultData = new ArrayList<>();
@@ -230,7 +241,7 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
             resultAdapter.notifyDataSetChanged();
         }
     }
-
+*/
     /**
      * 初始化视图
      */
@@ -254,7 +265,7 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
         etInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH && !etInput.getText().toString().equals("")) {
                     autoCompleteSearching(etInput.getText().toString().trim());
                 }
                 return true;
@@ -266,15 +277,13 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 //Toast.makeText(getActivity(), position + "", Toast.LENGTH_SHORT).show();
                 if (lvResults.getAdapter() == historyAdapter){
-                    etInput.setText(historyData.get(position).getWord());
-                    historySearching(etInput.getText().toString());
+                    historySearching(historyData.get(position).getWord().trim());
                 }else if (lvResults.getAdapter() == autoCompleteAdapter){
-                    etInput.setText(autoCompleteData.get(position).getWord());
-                    autoCompleteSearching(etInput.getText().toString());
-                }else {
-                    etInput.setText(resultData.get(position).getWord());
+                    autoCompleteSearching(autoCompleteData.get(position).getWord().trim());
+                }/*else {
+                    etInput.setText(resultData.get(position).getWord().trim());
                     historySearching(etInput.getText().toString());//因为只是传递进去的数据源不同，所以就共用一个方法了
-                }
+                }*/
             }
         });
     }
@@ -288,19 +297,13 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 
-        //将搜索的单词添加到搜索历史表中
-        onRefreshHistoryData(text);
-
         //搜索
-        onSearch(etInput.getText().toString());
+        onSearch(text);
     }
 
     private void historySearching(String text){
-        //将搜索的单词添加到搜索历史表中，并更新historyData
-        onRefreshHistoryData(text);
-
         //搜索
-        onSearch(etInput.getText().toString());
+        onSearch(text);
     }
 
     private void onRefreshHistoryData(String text){
@@ -309,22 +312,23 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
     }
 
     private void onSearch(String text) {
+        //将搜索的单词添加到搜索历史表中
+        onRefreshHistoryData(text);
         //更新result数据
-        getResultData(text);
+        //getResultData(text);
         //lvResults.setVisibility(View.VISIBLE);
         //第一次获取结果 还未配置适配器
-        if (lvResults.getAdapter() == null) {
+        /*if (lvResults.getAdapter() == null) {
             //获取搜索数据 设置适配器
-            lvResults.setAdapter(resultAdapter);
+            //lvResults.setAdapter(resultAdapter);
         } else {
             //更新搜索数据
             resultAdapter.notifyDataSetChanged();
-        }
-        Intent intent=new Intent(getActivity(),DictionaryActivity.class);
+        }*/
+        Intent intent=new Intent(getActivity(),DictActivity.class);
+        intent.putExtra("word",text);
         startActivity(intent);
-        //Toast.makeText(getActivity(), "完成搜索", Toast.LENGTH_SHORT).show();
     }
-
 
     @Override
     public void onClick(View view) {
@@ -353,6 +357,7 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
                 onRefreshAutoComplete(charSequence + "");
             } else {
                 ivDelete.setVisibility(View.GONE);
+                lvResults.setAdapter(historyAdapter);
             }
         }
 

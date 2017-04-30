@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffe5e6e0">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="2.0dip"
+        android:background="#ffb2b2b2" />
+
+    <TextView
+        android:id="@+id/text_recite_grasp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10.0dip"
+        android:background="@android:color/transparent"
+        android:gravity="right"
+        android:text="掌握程度0/10     答错0次"
+        android:textColor="#ffb6b6b6"
+        android:textSize="15.0dip" />
+
+    <ImageButton
+        android:id="@+id/image_btn_play_music_of_word"
+        android:layout_width="wrap_content"
+        android:layout_height="130.0dip"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/text_recite_grasp"
+        android:layout_marginRight="20.0dip"
+        android:layout_weight="1.0"
+        android:background="@android:color/transparent"
+        android:padding="10.0dip"
+        android:scaleType="fitCenter"
+        android:src="@drawable/horn_on" />
+
+    <ImageButton
+        android:id="@+id/image_btn_delete_word_from_db"
+        android:layout_width="wrap_content"
+        android:layout_height="30.0dip"
+        android:layout_alignRight="@id/image_btn_play_music_of_word"
+        android:layout_below="@id/image_btn_play_music_of_word"
+        android:layout_weight="1.0"
+        android:background="@android:color/transparent"
+        android:paddingLeft="1.0dip"
+        android:paddingRight="10.0dip"
+        android:scaleType="fitCenter"
+        android:src="@drawable/button_delete" />
+
+    <TextView
+        android:id="@+id/text_recite_remind_of_delete_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/image_btn_delete_word_from_db"
+        android:layout_alignTop="@id/image_btn_delete_word_from_db"
+        android:layout_toLeftOf="@id/image_btn_delete_word_from_db"
+        android:gravity="center_vertical"
+        android:text="忽略这个单词？"
+        android:textColor="#ff23acac"
+        android:textSize="11.0sp" />
+
+    <ImageView
+        android:id="@+id/image_question"
+        android:layout_width="wrap_content"
+        android:layout_height="80.0dip"
+        android:layout_above="@id/text_recite_remind_of_delete_btn"
+        android:layout_below="@id/text_recite_grasp"
+        android:padding="5.0dip"
+        android:src="@drawable/recite_question" />
+
+    <TextView
+        android:id="@+id/text_recite_question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/text_recite_remind_of_delete_btn"
+        android:layout_below="@id/text_recite_grasp"
+        android:layout_toLeftOf="@id/image_btn_play_music_of_word"
+        android:layout_toRightOf="@id/image_question"
+        android:background="@android:color/transparent"
+        android:gravity="center_vertical"
+        android:padding="15.0dip"
+        android:text="hello"
+        android:textColor="#ff3b3c3d"
+        android:textSize="25.0dip"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/line_chocie"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/image_btn_delete_word_from_db"
+        android:layout_marginTop="20.0dip"
+        android:background="#ffe5e6e0"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="1.0dip"
+            android:layout_marginLeft="15.0dip"
+            android:layout_marginRight="15.0dip"
+            android:layout_marginTop="5.0dip"
+            android:layout_weight="1.0"
+            android:background="@drawable/layer_list_dict_item_back">
+
+            <Button
+                android:id="@+id/button_a"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:background="@android:color/transparent"
+                android:gravity="left|center"
+                android:paddingLeft="45.0dip"
+                android:singleLine="true"
+                android:textColor="@color/text_color"
+                android:textSize="23.0sp" />
+
+            <ImageView
+                android:id="@+id/image_a"
+                android:layout_width="32.0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="10.0"
+                android:paddingLeft="5.0dip"
+                android:scaleType="fitCenter"
+                android:src="@drawable/recite_item_index_a" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="1.0dip"
+            android:layout_marginLeft="15.0dip"
+            android:layout_marginRight="15.0dip"
+            android:layout_marginTop="5.0dip"
+            android:layout_weight="1.0"
+            android:background="@drawable/layer_list_dict_item_back">
+
+            <Button
+                android:id="@+id/button_b"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:background="@android:color/transparent"
+                android:gravity="left|center"
+                android:paddingLeft="45.0dip"
+                android:singleLine="true"
+                android:textColor="@color/text_color"
+                android:textSize="23.0sp" />
+
+            <ImageView
+                android:id="@+id/image_b"
+                android:layout_width="32.0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="10.0"
+                android:paddingLeft="5.0dip"
+                android:scaleType="fitCenter"
+                android:src="@drawable/recite_item_index_b" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="1.0dip"
+            android:layout_marginLeft="15.0dip"
+            android:layout_marginRight="15.0dip"
+            android:layout_marginTop="5.0dip"
+            android:layout_weight="1.0"
+            android:background="@drawable/layer_list_dict_item_back">
+
+            <Button
+                android:id="@+id/button_c"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:background="@android:color/transparent"
+                android:gravity="left|center"
+                android:paddingLeft="45.0dip"
+                android:singleLine="true"
+                android:textColor="@color/text_color"
+                android:textSize="23.0sp" />
+
+            <ImageView
+                android:id="@+id/image_c"
+                android:layout_width="32.0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="10.0"
+                android:paddingLeft="5.0dip"
+                android:scaleType="fitCenter"
+                android:src="@drawable/recite_item_index_c" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="5.0dip"
+            android:layout_marginLeft="15.0dip"
+            android:layout_marginRight="15.0dip"
+            android:layout_marginTop="5.0dip"
+            android:layout_weight="1.0"
+            android:background="@drawable/layer_list_dict_item_back">
+
+            <Button
+                android:id="@+id/button_d"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:background="@android:color/transparent"
+                android:gravity="left|center"
+                android:paddingLeft="45.0dip"
+                android:singleLine="true"
+                android:textColor="@color/text_color"
+                android:textSize="23.0sp" />
+
+            <ImageView
+                android:id="@+id/image_d"
+                android:layout_width="32.0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="10.0"
+                android:paddingLeft="5.0dip"
+                android:scaleType="fitCenter"
+                android:src="@drawable/recite_item_index_d" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/line_recite_chioce_shadow"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignTop="@id/line_chocie"
+        android:layout_below="@id/image_btn_delete_word_from_db"
+        android:background="#ffe5e6e0"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="1.0dip"
+            android:layout_marginLeft="15.0dip"
+            android:layout_marginRight="15.0dip"
+            android:layout_marginTop="5.0dip"
+            android:layout_weight="1.0"
+            android:background="@drawable/layer_list_dict_item_back" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="1.0dip"
+            android:layout_marginLeft="15.0dip"
+            android:layout_marginRight="15.0dip"
+            android:layout_marginTop="5.0dip"
+            android:layout_weight="1.0"
+            android:background="@drawable/layer_list_dict_item_back" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="1.0dip"
+            android:layout_marginLeft="15.0dip"
+            android:layout_marginRight="15.0dip"
+            android:layout_marginTop="5.0dip"
+            android:layout_weight="1.0"
+            android:background="@drawable/layer_list_dict_item_back" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="1.0dip"
+            android:layout_marginLeft="15.0dip"
+            android:layout_marginRight="15.0dip"
+            android:layout_marginTop="5.0dip"
+            android:layout_weight="1.0"
+            android:background="@drawable/layer_list_dict_item_back" />
+    </LinearLayout>
+</RelativeLayout>
