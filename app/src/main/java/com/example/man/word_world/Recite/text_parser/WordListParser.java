@@ -74,8 +74,9 @@ public class WordListParser {
         countWord=wordList.size();
         countInterpret=interpretList.size();
         count=countWord>countInterpret?countInterpret:countWord;
+        dbManager.getDatabase().delete("wordsList",null,null);//删除表中所有数据
         for(int i=0;i<count;i++){
-            dbManager.insertWordInfoToDataBase(wordList.get(i), interpretList.get(i), true);
+            dbManager.insertWordInfoToGlossary(wordList.get(i), interpretList.get(i), true);
         }
     }
 

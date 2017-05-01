@@ -24,7 +24,6 @@ import com.example.man.word_world.search.wordcontainer.Dict;
 import com.example.man.word_world.search.wordcontainer.Mp3Player;
 import com.example.man.word_world.search.wordcontainer.WordValue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DictActivity extends Activity{
@@ -236,7 +235,7 @@ public class DictActivity extends Activity{
             Toast.makeText(DictActivity.this, "单词格式错误", Toast.LENGTH_SHORT).show();
             return;                   //若是不是有效单词，那么将不能添加到单词本
         }
-        boolean isSuccess=dbManager.insertWordInfoToGlossary(searchedWord, w.getInterpret(), false);
+        boolean isSuccess=dbManager.insertWordInfoToWordsList(searchedWord, w.getInterpret(), false);
         if(isSuccess){
             Toast.makeText(DictActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
         }else{

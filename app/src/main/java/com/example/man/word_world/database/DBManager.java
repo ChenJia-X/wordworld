@@ -44,7 +44,7 @@ public class DBManager {
             +"sentorig text,"
             +"senttrans text)";
 
-    //单词本
+    //词汇学习表
     private static final String CREATE_GLOSSARY ="create table if not exists glossary("
             +"word text,"
             +"interpret text,"
@@ -53,7 +53,7 @@ public class DBManager {
             +"grasp int,"
             +"learned int)";
 
-    //词汇学习表
+    //单词本
     private static final String CREATE_WORDS_LIST ="create table if not exists wordsList("
             +"word text,"
             +"interpret text,"
@@ -62,13 +62,13 @@ public class DBManager {
             +"grasp int,"
             +"learned int)";
 
-    //用户词汇表
+    //用户学习表
     private static final String CREATE_RECITE_DATA ="create table if not exists reciteData("
             +"course_name text primary key,"
             +"total_words int,"
             +"start_time text,"
             +"interdays int,"
-            +"end_time int)";
+            +"end_time text)";
 
 
     public DBManager(){
@@ -103,6 +103,11 @@ public class DBManager {
         return cursor;
     }
 
+    public Cursor getReciteData(){
+        String sql="select * from reciteData";
+        return database.rawQuery(sql,null);
+    }
+
     public void refreshHistoryData(String text){
         Cursor cursor=database.rawQuery("select * from HistorySearch order by time DESC",null);
         int count=cursor.getCount();
@@ -111,7 +116,6 @@ public class DBManager {
             int i=cursor.getColumnIndex("spelling");
             if (cursor.getString(i).equals(text)){
                 database.execSQL("delete from HistorySearch where spelling=?",new String[]{text});
-                //database.delete("HistorySearch","spelling=?",new String[]{text});
                 count-=1;
                 break;
             }
@@ -120,18 +124,12 @@ public class DBManager {
         if (count>=HISTORY_SIZE){
             cursor.moveToLast();
             database.execSQL("delete from HistorySearch where spelling=?",new String[]{cursor.getString(cursor.getColumnIndex("spelling"))});
-            //database.delete("HistorySearch","spelling=?",new String[] {cursor.getString(cursor.getColumnIndex("spelling"))});
         }
         //获取当前系统时间，time为1970.1.1以来的毫秒数
         Date date=new Date(System.currentTimeMillis());
         long time=date.getTime();
         //将单词插入表中
         database.execSQL("insert into HistorySearch(spelling,time) values(?,?)",new Object[]{text,time});
-        /*ContentValues contentValues=new ContentValues();
-        contentValues.put("spelling",text);
-        contentValues.put("time",time);
-        database.insert("HistorySearch",null,contentValues);
-        contentValues.clear();*/
         cursor.close();
     }
 
@@ -142,12 +140,12 @@ public class DBManager {
      * @param OverWrite
      * @return
      */
-    public Boolean insertWordInfoToGlossary(String word, String interpret, Boolean OverWrite){
+    public Boolean insertWordInfoToWordsList(String word, String interpret, Boolean OverWrite){
         Cursor cursor = null;
         if(database ==null){
             database=getDatabase();
         }
-        cursor =database.rawQuery("select word from glossary where word=?",new String[]{word});
+        cursor =database.rawQuery("select word from wordsList where word=?",new String[]{word});
         if (cursor.moveToNext()){
             return true;
         }else {
@@ -171,12 +169,12 @@ public class DBManager {
      * @param overWrite
      * @return
      */
-    public boolean insertWordInfoToDataBase(String word, String interpret, boolean overWrite) {
+    public boolean insertWordInfoToGlossary(String word, String interpret, boolean overWrite) {
         Cursor cursor = null;
         if(database ==null){
             database=getDatabase();
         }
-        cursor =database.rawQuery("select word from wordsList where word=?",new String[]{word});
+        cursor =database.rawQuery("select word from glossary where word=?",new String[]{word});
         //cursor = database.query("glossary", new String[] {"word"}, "word=?", new String[] {word}, null, null, null);
         //若改单词已经存在
         if(cursor.moveToNext()) {
@@ -187,7 +185,7 @@ public class DBManager {
                 values.put("wrong", 0);
                 values.put("grasp", 0);//掌握程度
                 values.put("learned", 0);//用于标志该单词是否已经背过
-                database.update("wordsList", values, "word=?", new String[] {word});
+                database.update("glossary", values, "word=?", new String[] {word});
                 cursor.close();
                 return true;
             }else{
@@ -202,27 +200,34 @@ public class DBManager {
             values.put("wrong", 0);
             values.put("grasp", 0);
             values.put("learned", 0);
-            database.insert("wordsList", null, values);
+            database.insert("glossary", null, values);
             cursor.close();
             return true;
         }
     }
 
-    public Boolean insertReciteData(String course_name,int total_words,String start_time,int interdays,String end_times){
-        database.execSQL("insert into reciteDta(course_name,total_words,start_time,interdays,end_time)values(?,?,?,?,?)",
-                new Object[]{course_name, total_words, start_time, interdays, end_times});
-        return true;
+    public void updateReciteData_time(String course_name, int interdays, String end_times){
+        ContentValues values=new ContentValues();
+        values.put("interdays",interdays);
+        values.put("end_time",end_times);
+        database.update("reciteData",values,"course_name=?",new String[]{course_name});
     }
 
-    public Cursor getReciteData(){
-        String sql="select * from reciteData";
-        return database.rawQuery(sql,null);
-    }
-
-    public Cursor query(String[] word ){
-        String sql="select chinese from t-words where english=?";
-        Cursor cursor=database.rawQuery(sql,word);
-        return cursor;
+    public void updateReciteData_words(String course_name,int total_words,String start_time){
+        Cursor cursor=getReciteData();
+        //已存在记录则更新，否则插入
+        if (cursor!=null && cursor.moveToNext()){
+            ContentValues values=new ContentValues();
+            values.put("course_name",course_name);
+            values.put("total_words",total_words);
+            database.update("reciteData",values,"course_name=?",new String[]{course_name});
+        }else {
+            ContentValues values=new ContentValues();
+            values.put("course_name",course_name);
+            values.put("total_words",total_words);
+            values.put("start_time",start_time);
+            database.insert("reciteData",null,values);
+        }
     }
 
     public void closeDB(){

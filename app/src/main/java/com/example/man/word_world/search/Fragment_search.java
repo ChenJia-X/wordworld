@@ -83,16 +83,6 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
     private CommonAdapter<Bean> autoCompleteAdapter;
 
     /**
-     * 搜索结果的数据
-     */
-    private List<Bean> resultData;
-
-    /**
-     * 搜索结果列表adapter
-     */
-    private CommonAdapter<Bean> resultAdapter;
-
-    /**
      * 默认提示框显示项的个数
      */
     private static int DEFAULT_AUTOCOMPLETE_SIZE = 10;
@@ -123,12 +113,6 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
      * 初始化数据
      */
     private void initData() {
-        //创建、访问数据库
-        /*if(ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                !=PackageManager.PERMISSION_GRANTED){
-            requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
-        }*/
-
         dbManager =new DBManager(getActivity());
         //从数据库获取数据
         getWordsData();
@@ -215,34 +199,6 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
     }
 
     /**
-     * 获取搜索结果data和adapter
-     */
-    /*private void getResultData(String text) {
-        if (resultData == null) {
-            // 初始化
-            resultData = new ArrayList<>();
-        } else {
-            resultData.clear();
-            for (int i = 0; i < dbData.size(); i++) {
-                Bean bean=dbData.get(i);
-                if (bean.getWord().contains(text.trim())) {
-                    resultData.add(bean);
-                }
-            }
-        }
-        if (resultAdapter == null) {
-            resultAdapter = new CommonAdapter<Bean>(getActivity(), android.R.layout.simple_list_item_1, resultData) {
-                @Override
-                public void convert(ViewHolder holder, int position) {
-                    holder.setText(android.R.id.text1 , mData.get(position).getWord());
-                }
-            };
-        } else {
-            resultAdapter.notifyDataSetChanged();
-        }
-    }
-*/
-    /**
      * 初始化视图
      */
     private void initViews() {
@@ -252,9 +208,6 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
         btnBack=(Button)getActivity().findViewById(R.id.search_btn_back);
         lvResults = (ListView) getActivity().findViewById(R.id.main_lv_search_results);
         lvResults.setAdapter(historyAdapter);
-
-        //设置adapter
-        //lvResults.setAdapter(historyAdapter);
 
         //设置点击事件
         ivDelete.setOnClickListener(this);
@@ -275,15 +228,11 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
         lvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                //Toast.makeText(getActivity(), position + "", Toast.LENGTH_SHORT).show();
                 if (lvResults.getAdapter() == historyAdapter){
                     historySearching(historyData.get(position).getWord().trim());
                 }else if (lvResults.getAdapter() == autoCompleteAdapter){
                     autoCompleteSearching(autoCompleteData.get(position).getWord().trim());
-                }/*else {
-                    etInput.setText(resultData.get(position).getWord().trim());
-                    historySearching(etInput.getText().toString());//因为只是传递进去的数据源不同，所以就共用一个方法了
-                }*/
+                }
             }
         });
     }
@@ -314,17 +263,6 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
     private void onSearch(String text) {
         //将搜索的单词添加到搜索历史表中
         onRefreshHistoryData(text);
-        //更新result数据
-        //getResultData(text);
-        //lvResults.setVisibility(View.VISIBLE);
-        //第一次获取结果 还未配置适配器
-        /*if (lvResults.getAdapter() == null) {
-            //获取搜索数据 设置适配器
-            //lvResults.setAdapter(resultAdapter);
-        } else {
-            //更新搜索数据
-            resultAdapter.notifyDataSetChanged();
-        }*/
         Intent intent=new Intent(getActivity(),DictActivity.class);
         intent.putExtra("word",text);
         startActivity(intent);

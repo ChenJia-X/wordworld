@@ -4,31 +4,30 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.man.word_world.R;
-import com.example.man.word_world.Recite.diyview.MyProgressBar;
 import com.example.man.word_world.Recite.text_parser.WordListParser;
 import com.example.man.word_world.database.DBManager;
 import com.example.man.word_world.search.util.FileUtils;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by man on 2016/12/29.
@@ -36,19 +35,20 @@ import java.util.Calendar;
 public class Fragment_recite extends Fragment {
     public static final int MODE1_INSERT_FROM_SDCARD = 0;
     public static final int MODE2_INSERT_FROM_RES_GRE = 1;
+    public static Boolean isSetted=false;
     public static int accent;
     public static String courseName;
-    public static int totalWords = 0;
-    public static int deadlineDay = 0;
+    public static int totalWords;
+    public static String start_time;
+    public static int interdays;
+    public static String end_time;
+    public static int deadlineDay;
     public static int deadlineMonth;
     public static int deadlineYear;
-    public static int delay = 0;
     public static int glossaryRawResourceID;
 
-    protected static final int STOP = 0x10000;
-    protected static final int NEXT = 0x10001;
-    private int iCount=0;
     private DBManager dbManager;
+    private Cursor cursor;
 
     private Button buttonSetInsertLocalCet4;
     private Button buttonSetInsertLocalCet6;
@@ -56,9 +56,6 @@ public class Fragment_recite extends Fragment {
     private Button buttonStartRecite;
     private Button buttonSetDeadline;
     private EditText editTime;
-    private Button buttonDialogYes;
-    private Button buttonDialogNo;
-    private MyProgressBar myProgressBar;
 
     static
     {
@@ -74,14 +71,21 @@ public class Fragment_recite extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recite,container,false);
-        //initData();
-        dbManager=new DBManager(getActivity());
         return view;
     }
 
     @Override
     public void onStart(){
         super.onStart();
+        //检测是否创建过学习计划
+        dbManager=new DBManager(getActivity());
+        cursor=dbManager.getReciteData();
+        if (cursor.moveToNext() && cursor!=null){//对cursor的任何操作，一定不要忘记添加这句，否则会抛出异常闪退
+            courseName=cursor.getString(cursor.getColumnIndex("course_name"));
+            start_time=cursor.getString(cursor.getColumnIndex("start_time"));
+            end_time=cursor.getString(cursor.getColumnIndex("end_time"));
+            if (end_time!=null) isSetted=true;
+        }
         initViews();
     }
 
@@ -97,9 +101,13 @@ public class Fragment_recite extends Fragment {
         buttonSetInsertLocalCet6.setOnClickListener(new BsetInsertLocalGlossaryClickListener(this,R.raw.cet6));
         buttonSetInsertLocalGRE.setOnClickListener(new BsetInsertLocalGlossaryClickListener(this,R.raw.gre));
         buttonSetDeadline.setOnClickListener(new BsetDeadlineClickListener());
+
+        if (isSetted) editTime.setText(cursor.getString(cursor.getColumnIndex("end_time")));
+        else editTime.setText("请设置完成时间！");
+        editTime.setInputType(InputType.TYPE_NULL);//禁止修改
     }
 
-    private class BsetInsertLocalGlossaryClickListener implements View.OnClickListener {
+    class BsetInsertLocalGlossaryClickListener implements View.OnClickListener {
         private int mglossaryResId;
         public BsetInsertLocalGlossaryClickListener(Fragment_recite fragment_recite, int glossaryResId) {
             mglossaryResId=glossaryResId;
@@ -111,128 +119,105 @@ public class Fragment_recite extends Fragment {
             switch (glossaryRawResourceID){
                 case R.raw.cet4:
                     courseName="CET4";
-                    totalWords=4000;//数字只是举例
+                    totalWords=3662;
                     break;
                 case R.raw.cet6:
                     courseName="CET6";
-                    totalWords=4000;
+                    totalWords=2083;
                     break;
                 case R.raw.gre:
                     courseName="GRE";
-                    totalWords=4000;
+                    totalWords=2985;
                     break;
             }
-            showInsertAlertDialog(MODE2_INSERT_FROM_RES_GRE);//参数是猜测的不一定对
+            showInsertAlertDialog();//MODE1_INSERT_FROM_SDCARD 参数是猜测的不一定对
         }
+
+        public void showInsertAlertDialog() {
+            AlertDialog.Builder dialog=new AlertDialog.Builder(getActivity());
+            dialog.setMessage("覆盖词库原有记录？");
+            dialog.setCancelable(true);
+            dialog.setPositiveButton("是",new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    new UpdateGlossaryTask().execute();
+                }
+            });
+            dialog.setNegativeButton("否", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
+
     }
 
-    public void showInsertAlertDialog(int mode) {
-        AlertDialog dialog=new AlertDialog.Builder(getActivity(),R.style.Translucent_NoTitle).create();
-        dialog.show();
-        Window window = dialog.getWindow();
-        window.setContentView(R.layout.dialog_if_layout);
-        buttonDialogYes = (Button)window.findViewById(R.id.dialog_confirm);
-        buttonDialogNo = (Button)window.findViewById(R.id.dialog_cancel);
-        buttonDialogYes.setOnClickListener(new BDialogSetOverWriteOrNotClickLis(dialog, true, mode));
-        buttonDialogNo.setOnClickListener(new BDialogSetOverWriteOrNotClickLis(dialog, false, mode));
-        buttonDialogYes.setText("是");
-        buttonDialogNo.setText("否");
-        TextView dialogText = (TextView)window.findViewById(R.id.dialog_text);
-        dialogText.setText("覆盖词库原有记录？");
-    }
-
-    private class BDialogSetOverWriteOrNotClickLis implements View.OnClickListener {
-        AlertDialog malertDialog;
-        int mode;
-        boolean isDeleteOrigin = false;
-        public BDialogSetOverWriteOrNotClickLis(AlertDialog alertDialog, boolean isDeleteOrigin, int mode) {
-            malertDialog=alertDialog;
-            isDeleteOrigin = isDeleteOrigin;
-            mode = mode;
-        }
-        public void onClick(View arg0) {
-            /*myProgressBar=(MyProgressBar)getActivity().findViewById(R.id.progressBar_update_glossary);
-            RelativeLayout relativeLayout=(RelativeLayout) getActivity().findViewById(R.id.rel_set_progress_back);
-            relativeLayout.setVisibility(View.VISIBLE);
-            malertDialog.cancel();*/
-            ProgressDialog progressDialog=new ProgressDialog(getActivity());
+    class UpdateGlossaryTask extends AsyncTask<Void,Integer,Boolean>{
+        private ProgressDialog progressDialog;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog=new ProgressDialog(getActivity());
             progressDialog.setTitle("词库导入中");
             progressDialog.setMessage("Loading...");
-            progressDialog.setCancelable(true);
+            progressDialog.setCancelable(false);
             progressDialog.show();
-            new ThreadUpdateGlossary(getActivity(), isDeleteOrigin, mode).start();
         }
-    }
 
-    private class ThreadUpdateGlossary extends Thread{
-        boolean isDeleteOrigin = false;
-        int mode = 0;
-        public ThreadUpdateGlossary(Context context, boolean isDeleteOrigin, int mode) {
-            isDeleteOrigin = isDeleteOrigin;
-            mode = mode;
-        }
-        public void run() {
-            super.run();
-            // 每秒步长为10增加,到100%时停止
-            for(int i=0 ; i < 20; i++){
-                try{
-                    iCount = (i + 1) * 10;
-                    Thread.sleep(1000);
-                    if(i >= 19){
-                        Message msg = new Message();
-                        msg.what = STOP;
-                        mHandler.sendMessage(msg);
-                        break;
-                    }else{
-                        Message msg = new Message();
-                        msg.what = NEXT;
-                        mHandler.sendMessage(msg);
-                    }
-                }catch (Exception e) {
-                    e.printStackTrace();
-                }
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            updateGlossary();
+
+            if (start_time==null){
+                Calendar calendar=Calendar.getInstance();
+                start_time=calendar.get(Calendar.YEAR)+"."+(calendar.get(Calendar.MONTH)+1)+"."+calendar.get(Calendar.DAY_OF_MONTH);
             }
-            //
-            updateGlossary(isDeleteOrigin, mode);
+            dbManager.updateReciteData_words(courseName,totalWords,start_time);
+
+            publishProgress();
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            progressDialog.dismiss();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+        }
+
+        /**
+         * 将从Raw中读取对应的txt文件并添加到数据库的wordsList表中
+         */
+        public void updateGlossary() {
+            //从Raw中读取对应的txt文件
+            InputStream inputStream = getResources().openRawResource(glossaryRawResourceID);
+            FileUtils fileUtils=new FileUtils();
+            WordListParser wordListParser=new WordListParser(getActivity(),"glossary");
+            wordListParser.parse(fileUtils.getStringFromInputStream(inputStream));
         }
     }
 
-    //定义一个Handler
-    private Handler mHandler = new Handler(){
-        public void handleMessage(Message msg){
-            switch (msg.what) {
-                case STOP:
-                    myProgressBar.setVisibility(View.GONE);
-                    Thread.currentThread().interrupt();
-                    break;
-                case NEXT:
-                    if(!Thread.currentThread().isInterrupted()){
-                        myProgressBar.setProgress(iCount);
-                    }
-                    break;
-            }
-        }
-    };
-
-    /**
-     * 将从Raw中读取对应的txt文件并添加到数据库的wordsstudy表中
-     * @param isDelteOriginData
-     * @param mode
-     */
-    public void updateGlossary(boolean isDelteOriginData, int mode) {
-        //从Raw中读取对应的txt文件
-        InputStream inputStream = getResources().openRawResource(glossaryRawResourceID);
-        FileUtils fileUtils=new FileUtils();
-        WordListParser wordListParser=new WordListParser(getActivity(),"wordsList");
-        wordListParser.parse(fileUtils.getStringFromInputStream(inputStream));
-    }
-
-    private class BsetDeadlineClickListener implements View.OnClickListener {
+    class BsetDeadlineClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            //先检测是否创建过学习计划
-            if(courseName.equals(""))
+            if(courseName.equals("")){
+                AlertDialog.Builder dialog=new AlertDialog.Builder(getActivity());
+                dialog.setMessage("请先使用本地词库创建学习课程！");
+                dialog.setPositiveButton("是",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
                 return;//防止空指针
+            }
 
             //http://blog.csdn.net/u010142437/article/details/9103087
             Calendar calendar = Calendar.getInstance();
@@ -245,23 +230,38 @@ public class Fragment_recite extends Fragment {
                             deadlineYear=year;
                             deadlineMonth=monthOfYear;
                             deadlineDay=dayOfMonth;
+                            calculateTime();
                         }
                     }
                     , calendar.get(Calendar.YEAR)
                     , calendar.get(Calendar.MONTH)
                     , calendar.get(Calendar.DAY_OF_MONTH));
             dialog.show();
-            //计算学习总天数
-            String start_time=calendar.get(Calendar.YEAR)+"."+(calendar.get(Calendar.MONTH)+1)+"."+calendar.get(Calendar.DAY_OF_MONTH);
-            String end_time=deadlineYear+"."+deadlineMonth+"."+deadlineDay;
-            calendar.set(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
-            long time1=calendar.getTimeInMillis();
-            calendar.set(deadlineYear,deadlineMonth-1,deadlineDay);
-            long time2=calendar.getTimeInMillis();
-            int interdays=(int) (time2-time1)/(1000*60*60*24);
+        }
+
+        //计算学习总天数
+        private void calculateTime() {
+            ArrayList<Integer> arrayList=new ArrayList<>();
+            Pattern pattern=Pattern.compile("[0-9]+");
+            Matcher matcher=pattern.matcher(start_time);
+            while (matcher.find()){
+                arrayList.add(Integer.parseInt(matcher.group()));
+            }
+            Calendar calendar=Calendar.getInstance();
+            calendar.set(arrayList.get(0),arrayList.get(1),arrayList.get(2));
+            long time1=calendar.getTimeInMillis();//start_time
+            calendar.set(deadlineYear,deadlineMonth,deadlineDay);
+            long time2=calendar.getTimeInMillis();//end_time
+            interdays=(int) ((time2-time1)/(1000*60*60*24));//注意强制转换的运算优先级
+            end_time=deadlineYear+"."+deadlineMonth+"."+deadlineDay;
+            dbManager.updateReciteData_time(courseName,interdays,end_time);
             Toast.makeText(getActivity(),interdays+"",Toast.LENGTH_SHORT).show();
-            dbManager.insertReciteData(courseName,totalWords,start_time,interdays,end_time);
             editTime.setText(deadlineYear + "." + deadlineMonth + "." + deadlineDay);
         }
+
+        private void getTimeFromDB(String time,ArrayList<Integer> arrayList) {
+
+        }
     }
+
 }
