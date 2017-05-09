@@ -21,7 +21,6 @@ import com.example.man.word_world.database.DBManager;
 public class WordBox {
     public Context context=null;
     public String tableName=null;
-    private DBManager dbManager=null;
     private SQLiteDatabase database=null;
 
     public final static int GRASP_89=8;
@@ -33,8 +32,6 @@ public class WordBox {
     public final static int LEARNED=1;
     public final static int UNLEARNED=0;
 
-
-
     public static int process=GRASP_89;    //总学习进度控制变量
     public static int wordCount=0;         //在某一复习阶段背的单词数
     public static boolean processWrong=false;        //是否要开始背错误的单词
@@ -45,7 +42,6 @@ public class WordBox {
     public final static int STEP_4_REVIEW_6=3;
     public static int processLearnNewWord=STEP_1_NEWWORD1;
 
-
     public LinkedList<WordInfo> wrongWordList=null;
     public Random rand=null;
 
@@ -53,25 +49,24 @@ public class WordBox {
     public WordBox(Context context,String tableName){
         this.context=context;
         this.tableName=tableName;
-        dbManager=new DBManager(context);
-        database=dbManager.getDatabase();
-        wrongWordList=new LinkedList<WordInfo>();
+        database=DBManager.getDatabase();
+        wrongWordList=new LinkedList<>();
         rand=new Random();
     }
-
 
 
     @Override
     protected void finalize() throws Throwable {
         // TODO Auto-generated method stub
+        database.close();
         super.finalize();
     }
-
 
 
     public void removeWordFromDatabase(String word){
         database.delete(tableName, "word=?", new String[]{word});
     }
+
 
     /**
      * 多个条件查找Where子句时需要用and 或or连接
@@ -85,6 +80,7 @@ public class WordBox {
         cursor.close();
         return count;
     }
+
 
     public int getTotalLearnProgress(){
         int learnCount=0;
@@ -103,6 +99,7 @@ public class WordBox {
         return  (int)(((float)learnCount/(float)totalCount)*100);
     }
 
+
     public int getWordCountOfUnlearned(){
         Cursor cursorTotal=database.query(tableName, new String[]{"word"}, "word like?", new String[]{"%"}, null, null, null);
         int totalCount=cursorTotal.getCount();
@@ -113,9 +110,11 @@ public class WordBox {
         return totalCount-learnCount;
     }
 
-    public WordInfo getWordByGraspByRandom(int fromGrasp,int toGrasp,int learned){    //从数据库中随机取出某个特定掌握程度区间的单词,加learned是区别学习程度为0的学过得和没学过的
+
+    //从数据库中随机取出某个特定掌握程度区间的单词,加learned是区别学习程度为0的学过得和没学过的
+    public WordInfo getWordByGraspByRandom(int fromGrasp,int toGrasp,int learned){
         int totalCount=0,temp=0;
-        ArrayList<Integer> graspsNotEmpty=new ArrayList<Integer>();
+        ArrayList<Integer> graspsNotEmpty=new ArrayList<>();
         for(int i=fromGrasp; i<=toGrasp;i++){
             temp=getWordCountByGrasp(i,learned);  //这说明给定掌握程度范围内没有单词
             totalCount+=temp;
@@ -128,7 +127,8 @@ public class WordBox {
 
         int length=graspsNotEmpty.size();
         if(length<=0)
-            return null;       //在有数据的掌握程度中随机找出一个单词来
+            return null;
+        //在有数据的掌握程度中随机找出一个单词来
         int graspInt=graspsNotEmpty.get(rand.nextInt(length));     //随机确定一个掌握程度
         int count=getWordCountByGrasp(graspInt, learned);          //确定该掌握程度单词数，获得Cursor对象，利用move方法进行随机移动
         int index=rand.nextInt(count)+1;
@@ -160,14 +160,12 @@ public class WordBox {
 
         int i=0;
         int index=0;
-        while(i<6){
+        while(i<6){//最多6次，为index随机取一个不等于lastGetIndex的值
             index=rand.nextInt(count)+1;
             if(index!=lastGetIndex)
                 break;
             i++;
         }
-
-
 
         lastGetIndex=index;
         cursor.move(index);
@@ -180,6 +178,7 @@ public class WordBox {
         return new WordInfo(word, interpret, wrong, right, grasp);
     }
 
+
     String[] logProcess=new String[]{"G01","","G23","","G45","","G67","","G89","","NEW WORD"};
     String[] logLearn=new String[]{"NEW1","REVIEW20","NEW2","REVIEW6"};
 
@@ -190,7 +189,6 @@ public class WordBox {
         /**
          * 打印参数信息
          */
-
         if(processWrong){
             return getWrongWord();
         }
@@ -229,18 +227,21 @@ public class WordBox {
 
     //外部敲击后反馈回来的函数
     public void feedBack(WordInfo wordInfo,boolean isRight){
+        //对可能出现的空指针异常进行处理
         if(wordInfo==null)
-            return;           //对可能出现的空指针异常进行处理
+            return;
 
         String word=wordInfo.getWord();
         int right=wordInfo.getRight();
         int wrong=wordInfo.getWrong();
         int graspInt=0;
+        //更新答对答错次数
         if(isRight){
             right++;
         }else{
-            wrong++;      //更新答对答错次数
+            wrong++;
         }
+        //grasp的计算方式
         if(right-2*wrong<0){
             graspInt=0;
         }else if(right-2*wrong>10){
@@ -259,13 +260,12 @@ public class WordBox {
         database.update(tableName, values, "word=?", new String[]{word});
 
         //若出错，将数据存在出错队列中
-        if(isRight==false){
+        if(!isRight){
             wordInfo.setRight(right);
             wordInfo.setWrong(wrong);
             wordInfo.setGrasp(graspInt);
             wrongWordList.offer(wordInfo);
         }
-
     }
 
 
@@ -277,8 +277,8 @@ public class WordBox {
         switch(processLearnNewWord){
             case STEP_1_NEWWORD1:{
                 if((wordInfo=getWordByGraspByRandom(GRASP_01,GRASP_01,UNLEARNED ))==null
-                        || wordCount>rand.nextInt(3)+9 ){
-                    processLearnNewWord=STEP_2_REVIEW_20;
+                        || wordCount>rand.nextInt(3)+9 ){//疑问：为什么不是wordCount>9？
+                    processLearnNewWord=STEP_2_REVIEW_20;//rand.nextInt(3)在四个判断中都存在，它表示什么？
                     wordCount=0;
 
                     //这里表示所有的词都已经学完了
@@ -291,9 +291,9 @@ public class WordBox {
                 }
             }
             case STEP_2_REVIEW_20:{
-                if((wordInfo=getWordByGraspByRandom(0,2, LEARNED))==null){
-                    processLearnNewWord=STEP_3_NEWWORD2;
-                    wordCount=0;
+                if((wordInfo=getWordByGraspByRandom(0,2, LEARNED))==null){//疑问：这里只复习了0-2程度的单词。若要
+                    processLearnNewWord=STEP_3_NEWWORD2;                  //实现艾宾浩斯的算法，0、2两个参数需要通
+                    wordCount=0;                                          //过艾宾浩斯算法获取。
                 }else{
                     wordCount++;
                     if(wordCount>rand.nextInt(3)+19){
@@ -314,10 +314,8 @@ public class WordBox {
                     wordCount++;
                     return wordInfo;
                 }
-
             }
             case STEP_4_REVIEW_6:{
-
                 if((wordInfo=getWordByGraspByRandom(0,2, LEARNED))==null){
                     processLearnNewWord=STEP_1_NEWWORD1;
                     wordCount=0;
@@ -326,8 +324,6 @@ public class WordBox {
                      * 解决这个问题的方法是从数据库中随机取一个单词填坑。
                      */
                     return getWordByRandom();
-
-
                 }else{
                     wordCount++;
                     if(wordCount>rand.nextInt(3)+5){
@@ -338,19 +334,17 @@ public class WordBox {
                     }
                     return wordInfo;
                 }
-
             }
-            default: return null;
-
+            default: return null;//疑问：为什么不删掉这个语句呢？
         }
-
-
     }
+
 
     //复习阶段调用的取词函数
     public WordInfo getWordByAccurateGrasp(int curentGrasp,int nextGrasp,double percent){
         int count=0;
-        if((count=getWordCountByGrasp(curentGrasp,LEARNED)+getWordCountByGrasp(curentGrasp+1,LEARNED))<=0 || wordCount>=count*percent){
+        if((count=getWordCountByGrasp(curentGrasp,LEARNED)+getWordCountByGrasp(curentGrasp+1,LEARNED))<=0
+                || wordCount>=count*percent){
             process=nextGrasp;
             wordCount=0;
             return null;
@@ -358,17 +352,16 @@ public class WordBox {
             wordCount++;
 
             if(wordCount%(rand.nextInt(2)+19) ==0 && wrongWordList.size()>0 ){  //错误列表中必须有单词
-                processWrong=true;
+                processWrong=true;//疑问：没看懂上面的条件式表示什么含义
             }
             /**
              * return getWordByGraspByRandom(rand.nextInt(2)+curentGrasp,LEARNED );
              * 这样写会可能返回空值！需要逐个排除
              */
             return getWordByGraspByRandom(curentGrasp,curentGrasp+1, LEARNED);
-
-
         }
     }
+
 
     //学习错词的函数
     public WordInfo getWrongWord(){  //该函数被调用时，意味着错误词列表中一定有单词

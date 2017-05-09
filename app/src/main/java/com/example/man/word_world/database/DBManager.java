@@ -20,9 +20,9 @@ public class DBManager {
     private int HISTORY_SIZE=20;
 
     // 定义数据库的存放路径
-    private final String DATABASE_PATH = android.os.Environment
+    private static final String DATABASE_PATH = android.os.Environment
             .getExternalStorageDirectory().getAbsolutePath() + "/dictionary";
-    private final String DATABASE_FILENAME = "dictionary.db";
+    private static final String DATABASE_FILENAME = "dictionary.db";
 
     //历史搜索表
     private static final String CREATE_HISTORY_SEARCH ="create table if not exists HistorySearch("
@@ -85,7 +85,7 @@ public class DBManager {
     }
 
     public Cursor getWordsBookData(){
-        String sql="select word from glossary";
+        String sql="select word from wordsList";
         Cursor cursor=database.rawQuery(sql,null);
         return cursor;
     }
@@ -162,8 +162,9 @@ public class DBManager {
         }
     }
 
+
     /**
-     * 将单词添加到Recite表中
+     * 将单词添加到glossary表中
      * @param word
      * @param interpret
      * @param overWrite
@@ -205,6 +206,20 @@ public class DBManager {
             return true;
         }
     }
+
+
+    public Boolean isReciteDataExist(){
+        Cursor cursor=null;
+        try {
+            cursor=getReciteData();
+            if (cursor!=null&&cursor.getCount()>0) return true;
+            else return false;
+        }finally {
+            if (cursor!=null)
+                cursor.close();
+        }
+    }
+
 
     public void updateReciteData_time(String course_name, int interdays, String end_times){
         ContentValues values=new ContentValues();
@@ -276,7 +291,7 @@ public class DBManager {
     }
 
     // 打开/sdcard/dictionary目录中的dictionary.db文件
-    public SQLiteDatabase getDatabase(){
+    public static SQLiteDatabase getDatabase(){
         String databaseFilename = DATABASE_PATH + "/" + DATABASE_FILENAME;
         SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(
                 databaseFilename, null);

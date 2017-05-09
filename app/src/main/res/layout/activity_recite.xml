@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="#ffb2b2b2">
 
     <com.example.man.word_world.Recite.diyview.MyProgressBar
@@ -127,8 +128,10 @@
         android:layout_alignParentBottom="true"
         android:layout_below="@id/line_set_bar"
         android:background="#ffc2c2c2">
-        <include android:id="@+id/sub_layout_recite_main" layout="@layout/recite_main_layout" />
-        <include android:id="@+id/sub_layout_recite_wrong" layout="@layout/activity_wong_layout" />
+        <include android:id="@+id/sub_layout_recite_main"
+            layout="@layout/recite_main_layout" />
+        <include android:id="@+id/sub_layout_recite_wrong"
+            layout="@layout/activity_wong_layout" />
     </ViewFlipper>
 
     <LinearLayout android:id="@+id/line_recite_invisible_layer"

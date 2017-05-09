@@ -39,7 +39,7 @@ public class WordValue {
     }
 
     public ArrayList<String> getOrigList(){
-        ArrayList<String> list=new ArrayList<String>();
+        ArrayList<String> list=new ArrayList<>();
         BufferedReader br=new BufferedReader(new StringReader(this.sentOrig));
         String str=null;
         try{

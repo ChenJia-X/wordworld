@@ -27,8 +27,6 @@ public class WordListParser {
     }
 
 
-
-
     public void parse(String lineStr){
         int countWord=0;
         int countInterpret=0;

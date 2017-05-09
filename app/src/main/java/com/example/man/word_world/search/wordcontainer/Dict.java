@@ -23,15 +23,13 @@ import java.net.URLEncoder;
 public class Dict {
     public Context context = null;
     public String tableName = null;
-    private DBManager dbManager = null;
     private SQLiteDatabase database = null;
 
 
     public Dict(Context context, String tableName) {
         this.context = context;
         this.tableName = tableName;
-        dbManager = new DBManager();
-        database = dbManager.getDatabase();
+        database = DBManager.getDatabase();
 
         //并且调用下面两个方法获得dbR和dbW,用于完成对数据库的增删改查操作。
         //这里吧dbR dbW作为成员变量目的是避免反复实例化dbR  dbW造成数据库指针泄露。
@@ -68,7 +66,7 @@ public class Dict {
             values.put("senttrans", w.getSentTrans());
             cursor = database.query(tableName, new String[]{"word"}, "word=?", new String[]{w.getWord()}, null, null, null);
             if (cursor.getCount() > 0) {
-                if (isOverWrite == false)//首先看看数据库中有没有这个单词，若词典库中已经有了这一个单词，所以不再操作
+                if (!isOverWrite)//首先看看数据库中有没有这个单词，若词典库中已经有了这一个单词，所以不再操作
                     return;
                 else {              //执行更新操作
                     database.update(tableName, values, "word=?", new String[]{w.getWord()});
@@ -88,7 +86,6 @@ public class Dict {
 
     //判断数据库中是否存在某个单词
     public boolean isWordExist(String word) {
-
         Cursor cursor = null;
         try {
             cursor = database.query(tableName, new String[]{"word"}, "word=?", new String[]{word}, null, null, null);

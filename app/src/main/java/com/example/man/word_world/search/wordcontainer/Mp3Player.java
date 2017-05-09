@@ -61,12 +61,12 @@ public class Mp3Player {
             path=MUSIC_USA_RELATIVE_PATH;
         }
 
-        if(fileU.isFileExist(path+initialCharacter+"/","-$-"+word+".mp3")==false){
-            if(isAllowedToUseInternet==false)
+        if(!fileU.isFileExist(path+initialCharacter+"/","-$-"+word+".mp3")){
+            if(!isAllowedToUseInternet)
                 return;
             //为了避免多次多个线程同时访问网络下载同一个文件，这里加了这么一个控制变量
 
-            if(dict.isWordExist(word)==false){  //数据库中没有单词记录，从网络上进行同步
+            if(!dict.isWordExist(word)){  //数据库中没有单词记录，从网络上进行同步
                 if((w=dict.getWordFromInternet(word))==null){
                     return;
                 }
@@ -86,25 +86,21 @@ public class Mp3Player {
             in = NetOperator.getInputStreamByUrl(pronUrl);
             if(in==null)
                 return;
-            if(fileU.saveInputStreamToFile(in, path+initialCharacter+"/","-$-"+word+".mp3")==false)
+            if(!fileU.saveInputStreamToFile(in, path+initialCharacter+"/","-$-"+word+".mp3"))
                 return;
         }
         //走到这里说明文件夹里一定有响应的音乐文件，故在这里播放
-        if(isPlayRightNow==false)
+        if(!isPlayRightNow)
             return;
+        if(!isMusicPermitted){
+            return;
+        }
 
         /**
          * 这个方法存在缺点，可能因为同时new 了多个MediaPlayer对象，导致start方法失效，
          * 因此解决的方法是，使用同一个MediaPlayer对象，若一次播放时发现对象非空，那么先
          * 调用release()方法释放资源，再重新create
          */
-
-
-        if(isMusicPermitted==false){
-            return;
-        }
-
-
         try{
             if(mediaPlayer!=null){
                 if(mediaPlayer.isPlaying())

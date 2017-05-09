@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,6 @@ import com.example.man.word_world.search.util.FileUtils;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
  * Created by man on 2016/12/29.
  */
 public class Fragment_recite extends Fragment {
+    private static final String TAG = "Fragment_recite";
     public static final int MODE1_INSERT_FROM_SDCARD = 0;
     public static final int MODE2_INSERT_FROM_RES_GRE = 1;
     public static Boolean isSetted=false;
@@ -87,6 +88,7 @@ public class Fragment_recite extends Fragment {
             if (end_time!=null) isSetted=true;
         }
         initViews();
+        cursor.close();
     }
 
     private void initViews() {
@@ -101,6 +103,17 @@ public class Fragment_recite extends Fragment {
         buttonSetInsertLocalCet6.setOnClickListener(new BsetInsertLocalGlossaryClickListener(this,R.raw.cet6));
         buttonSetInsertLocalGRE.setOnClickListener(new BsetInsertLocalGlossaryClickListener(this,R.raw.gre));
         buttonSetDeadline.setOnClickListener(new BsetDeadlineClickListener());
+        buttonStartRecite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (dbManager.isReciteDataExist()){
+                    if (isSetted)
+                        ReciteActivity.actionStart(getActivity());
+                    else showAlertDialog("请设置完成时间！");
+                }
+                else checkCourse();
+            }
+        });
 
         if (isSetted) editTime.setText(cursor.getString(cursor.getColumnIndex("end_time")));
         else editTime.setText("请设置完成时间！");
@@ -206,18 +219,8 @@ public class Fragment_recite extends Fragment {
     class BsetDeadlineClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            if(courseName.equals("")){
-                AlertDialog.Builder dialog=new AlertDialog.Builder(getActivity());
-                dialog.setMessage("请先使用本地词库创建学习课程！");
-                dialog.setPositiveButton("是",new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
+            if (!checkCourse())
                 return;//防止空指针
-            }
 
             //http://blog.csdn.net/u010142437/article/details/9103087
             Calendar calendar = Calendar.getInstance();
@@ -257,11 +260,28 @@ public class Fragment_recite extends Fragment {
             dbManager.updateReciteData_time(courseName,interdays,end_time);
             Toast.makeText(getActivity(),interdays+"",Toast.LENGTH_SHORT).show();
             editTime.setText(deadlineYear + "." + deadlineMonth + "." + deadlineDay);
+            isSetted=true;
         }
+    }
 
-        private void getTimeFromDB(String time,ArrayList<Integer> arrayList) {
-
+    private Boolean checkCourse(){
+        if(courseName.equals("")){
+            showAlertDialog("请先使用本地词库创建学习课程！");
+            return false;
         }
+        else return true;
+    }
+
+    private void showAlertDialog(String message){
+        AlertDialog.Builder dialog=new AlertDialog.Builder(getActivity());
+        dialog.setMessage(message);
+        dialog.setPositiveButton("是",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 
 }

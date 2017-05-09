@@ -104,7 +104,7 @@ public class DictActivity extends Activity{
             dictHandler.post(new RunnableDictSetTextInterface(searchedWord, "", "", "", null));
 
             w=null;//对wordvalue初始化
-            if(dict.isWordExist(searchedWord) == false){//数据库中没有单词记录，从网络上进行同步
+            if(!dict.isWordExist(searchedWord)){//数据库中没有单词记录，从网络上进行同步
                 if((w=dict.getWordFromInternet(searchedWord))==null || w.getInterpret().equals("")){
                     return;//错词、没有释义的词语不添加进词典
                 }
@@ -194,23 +194,22 @@ public class DictActivity extends Activity{
             showAddDialog();
         }
 
-    }
+        public void showAddDialog(){
+            if(searchedWord==null)
+                return;
+            //使用R.style.Translucent_NoTitle来解决黑色背景问题
+            AlertDialog dialog=new AlertDialog.Builder(DictActivity.this,R.style.Translucent_NoTitle).create();
+            dialog.show();
+            Window window=dialog.getWindow();
+            window.setContentView(R.layout.dialog_if_layout);
+            buttonDictDialogConfirm=(Button)window.findViewById(R.id.dialog_confirm);
+            buttonDictDialogCancel=(Button)window.findViewById(R.id.dialog_cancel);
+            buttonDictDialogConfirm.setOnClickListener(new BDictDialogConfirmClickLis(dialog));
+            buttonDictDialogCancel.setOnClickListener(new BDictDialogCancelClickLis(dialog));
+            TextView dialogText=(TextView)window.findViewById(R.id.dialog_text);
+            dialogText.setText("把"+searchedWord+"添加到单词本?");
+        }
 
-
-    public void showAddDialog(){
-        if(searchedWord==null)
-            return;
-        //使用R.style.Translucent_NoTitle来解决黑色背景问题
-        AlertDialog dialog=new AlertDialog.Builder(DictActivity.this,R.style.Translucent_NoTitle).create();
-        dialog.show();
-        Window window=dialog.getWindow();
-        window.setContentView(R.layout.dialog_if_layout);
-        buttonDictDialogConfirm=(Button)window.findViewById(R.id.dialog_confirm);
-        buttonDictDialogCancel=(Button)window.findViewById(R.id.dialog_cancel);
-        buttonDictDialogConfirm.setOnClickListener(new BDictDialogConfirmClickLis(dialog));
-        buttonDictDialogCancel.setOnClickListener(new BDictDialogCancelClickLis(dialog));
-        TextView dialogText=(TextView)window.findViewById(R.id.dialog_text);
-        dialogText.setText("把"+searchedWord+"添加到单词本?");
     }
 
 
@@ -227,19 +226,17 @@ public class DictActivity extends Activity{
             dialog.cancel();
         }
 
-    }
-
-
-    public void insertWordToGlossary(){
-        if(w==null || w.getInterpret().equals("")){
-            Toast.makeText(DictActivity.this, "单词格式错误", Toast.LENGTH_SHORT).show();
-            return;                   //若是不是有效单词，那么将不能添加到单词本
-        }
-        boolean isSuccess=dbManager.insertWordInfoToWordsList(searchedWord, w.getInterpret(), false);
-        if(isSuccess){
-            Toast.makeText(DictActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(DictActivity.this, "单词已存在", Toast.LENGTH_SHORT).show();
+        public void insertWordToGlossary(){
+            if(w==null || w.getInterpret().equals("")){
+                Toast.makeText(DictActivity.this, "单词格式错误", Toast.LENGTH_SHORT).show();
+                return;                   //若是不是有效单词，那么将不能添加到单词本
+            }
+            boolean isSuccess=dbManager.insertWordInfoToWordsList(searchedWord, w.getInterpret(), false);
+            if(isSuccess){
+                Toast.makeText(DictActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(DictActivity.this, "单词已存在", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -257,9 +254,6 @@ public class DictActivity extends Activity{
         }
 
     }
-
-
-
 
 
     @Override

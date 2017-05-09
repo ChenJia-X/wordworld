@@ -225,7 +225,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/line_recite_chioce_shadow"
+        android:id="@+id/line_recite_choice_shadow"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -234,7 +234,8 @@
         android:background="#ffe5e6e0"
         android:gravity="bottom"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="visible"
+        android:animateLayoutChanges="true">
 
         <RelativeLayout
             android:layout_width="fill_parent"

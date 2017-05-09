@@ -9,8 +9,7 @@ public class WordInfo {
     public int wrong;
     public int right;
     public int grasp;
-    public WordInfo(String word, String interpret, int wrong, int right,
-                    int grasp) {
+    public WordInfo(String word, String interpret, int wrong, int right, int grasp) {
         super();
         this.word = word;
         this.interpret = interpret;
