@@ -6,20 +6,22 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.man.word_world.R;
 import com.example.man.word_world.Recite.text_parser.WordListParser;
+import com.example.man.word_world.Recite.wordcontainer.WordBox;
 import com.example.man.word_world.database.DBManager;
 import com.example.man.word_world.search.util.FileUtils;
 
@@ -43,6 +45,7 @@ public class Fragment_recite extends Fragment {
     public static String start_time;
     public static int interdays;
     public static String end_time;
+    public static int todayWordCount;
     public static int deadlineDay;
     public static int deadlineMonth;
     public static int deadlineYear;
@@ -50,6 +53,7 @@ public class Fragment_recite extends Fragment {
 
     private DBManager dbManager;
     private Cursor cursor;
+    private WordBox wordBox;
 
     private Button buttonSetInsertLocalCet4;
     private Button buttonSetInsertLocalCet6;
@@ -57,6 +61,12 @@ public class Fragment_recite extends Fragment {
     private Button buttonStartRecite;
     private Button buttonSetDeadline;
     private EditText editTime;
+    private TextView textGeneralTodayWords;
+    private TextView textGeneralLearnWords;
+    private TextView textGeneralGraspWords;
+    private TextView textGeneralNeedLearnWords;
+    private TextView textGeneralCourse;
+    private RoundProgressBar reciteProgressBar;
 
     static
     {
@@ -86,9 +96,23 @@ public class Fragment_recite extends Fragment {
             start_time=cursor.getString(cursor.getColumnIndex("start_time"));
             end_time=cursor.getString(cursor.getColumnIndex("end_time"));
             if (end_time!=null) isSetted=true;
+            totalWords=cursor.getInt(cursor.getColumnIndex("total_words"));
+            interdays=cursor.getInt(cursor.getColumnIndex("interdays"));
+            todayWordCount=totalWords/interdays;
         }
+        wordBox=new WordBox(getActivity(),"glossary");
         initViews();
+        setViews();
         cursor.close();
+    }
+
+    private void setViews() {
+        textGeneralTodayWords.setText("今日需要学习"+todayWordCount+"个单词");
+        textGeneralLearnWords.setText("已学习   "+(totalWords-wordBox.getWordCountOfUnlearned())+"个");
+        textGeneralGraspWords.setText("已掌握   "+wordBox.getWordCountByGrasp(10,1)+"个");
+        textGeneralNeedLearnWords.setText("未学习   "+wordBox.getWordCountOfUnlearned()+"个");
+        textGeneralCourse.setText(courseName);
+        reciteProgressBar.setProgress(wordBox.getTotalLearnProgress());
     }
 
     private void initViews() {
@@ -98,6 +122,12 @@ public class Fragment_recite extends Fragment {
         buttonStartRecite = (Button)getActivity().findViewById(R.id.btn_recite_start);
         buttonSetDeadline =(Button)getActivity().findViewById(R.id.btn_set_deadline);
         editTime=(EditText)getActivity().findViewById(R.id.edit_time);
+        textGeneralTodayWords=(TextView)getActivity().findViewById(R.id.text_general_today_should_grasp);
+        textGeneralNeedLearnWords=(TextView)getActivity().findViewById(R.id.text_dict_general_need_learn);
+        textGeneralLearnWords=(TextView)getActivity().findViewById(R.id.text_dict_general_learn);
+        textGeneralGraspWords=(TextView)getActivity().findViewById(R.id.text_dict_general_grasp);
+        textGeneralCourse=(TextView)getActivity().findViewById(R.id.text_general_course);
+        reciteProgressBar=(RoundProgressBar)getActivity().findViewById(R.id.recite_progressbar);
 
         buttonSetInsertLocalCet4.setOnClickListener(new BsetInsertLocalGlossaryClickListener(this,R.raw.cet4));
         buttonSetInsertLocalCet6.setOnClickListener(new BsetInsertLocalGlossaryClickListener(this,R.raw.cet6));
@@ -160,6 +190,8 @@ public class Fragment_recite extends Fragment {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
+                    courseName="";
+                    totalWords=0;
                 }
             });
             dialog.show();
@@ -258,9 +290,10 @@ public class Fragment_recite extends Fragment {
             interdays=(int) ((time2-time1)/(1000*60*60*24));//注意强制转换的运算优先级
             end_time=deadlineYear+"."+deadlineMonth+"."+deadlineDay;
             dbManager.updateReciteData_time(courseName,interdays,end_time);
-            Toast.makeText(getActivity(),interdays+"",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(),"总共学习"+interdays+"天",Toast.LENGTH_LONG).show();
             editTime.setText(deadlineYear + "." + deadlineMonth + "." + deadlineDay);
             isSetted=true;
+            setViews();//同步
         }
     }
 

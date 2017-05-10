@@ -136,17 +136,18 @@ public class Dict {
         InputStream in = null;
         String str = null;
         try {
-            String tempUrl = NetOperator.iCiBaURL1 + tempWord.trim() + NetOperator.iCiBaURL2;
-            in = NetOperator.getInputStreamByUrl(tempUrl);
-            if (in != null) {
-                new FileUtils().saveInputStreamToFile(in, "", "gfdgf2.txt");
-                XMLParser xmlParser = new XMLParser();
-                InputStreamReader reader = new InputStreamReader(in, "utf-8");
-                JinShanContentHandler contentHandler = new JinShanContentHandler();
-                xmlParser.parseJinShanXml(contentHandler, new InputSource(reader));
-                wordValue = contentHandler.getWordValue();
-                wordValue.setWord(searchedWord);
-            }
+            do {
+                String tempUrl = NetOperator.iCiBaURL1 + tempWord.trim() + NetOperator.iCiBaURL2;
+                in = NetOperator.getInputStreamByUrl(tempUrl);
+                if (in != null) {
+                    new FileUtils().saveInputStreamToFile(in, "", "gfdgf2.txt");
+                    XMLParser xmlParser = new XMLParser();
+                    InputStreamReader reader = new InputStreamReader(in, "utf-8");
+                    JinShanContentHandler contentHandler = new JinShanContentHandler();
+                    xmlParser.parseJinShanXml(contentHandler, new InputSource(reader));
+                    wordValue = contentHandler.getWordValue();
+                }
+            }while (wordValue.getSentOrig()==null||wordValue.getSentOrig().equals(""));//金山的服务器有时候会抽风，不给例句，所以当为空时再访问
         } catch (Exception e) {
             e.printStackTrace();
         }

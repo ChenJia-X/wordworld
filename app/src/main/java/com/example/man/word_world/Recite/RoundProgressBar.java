@@ -1,4 +1,4 @@
-package com.example.man.word_world.Recite.diyview;
+package com.example.man.word_world.Recite;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -75,7 +75,7 @@ public class RoundProgressBar extends View{
         paint.setColor(textColor);
         paint.setTextSize(textSize);
         paint.setTypeface(Typeface.DEFAULT_BOLD);//设置字体
-        int percent = (int)(progress / max * 100.0F);//中间的进度百分比，先转换成float在进行除法运算，不然都为0
+        int percent = (int)((progress*100.0F )/ max );//中间的进度百分比，先转换成float在进行除法运算，不然都为0
         float textWidth = paint.measureText(percent + "%");//测量字体宽度，我们需要根据字体的宽度设置在圆环中间
         if ((textIsDisplayable) && (percent >= 0) && (style == 0))
             canvas.drawText(percent + "%", centre - textWidth / 2.0F,

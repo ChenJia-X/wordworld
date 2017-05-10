@@ -47,8 +47,6 @@ public class ReciteActivity extends Activity {
     private TextView textReciteGrasp;
     private ImageView imageBtnPlayMusicOfWord;
     private ImageView imageBtnDeleteWordFromDB;
-    private LinearLayout lineReciteChoiceShadow;
-    private LinearLayout lineReciteInvisibleLayer;
     private Button buttonA;
     private Button buttonB;
     private Button buttonC;
@@ -100,7 +98,12 @@ public class ReciteActivity extends Activity {
         wrong=wordInfo.getWrong();
         right=wordInfo.getRight();
         grasp=wordInfo.getGrasp();
-        mp3Player.playMusicByWord(word,Mp3Player.USA_ACCENT,true,false);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mp3Player.playMusicByWord(word,Mp3Player.USA_ACCENT,true,false);
+            }
+        }).start();
         wordInfos[0]=wordBox.getWordByRandom();
         wordInfos[1]=wordBox.getWordByRandom();
         wordInfos[2]=wordBox.getWordByRandom();
@@ -113,7 +116,7 @@ public class ReciteActivity extends Activity {
         imageBtnPlayMusicOfWord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mp3Player.playMusicByWord(word,Mp3Player.USA_ACCENT,true,true);
+                mp3Player.playMusicByWord(word,Mp3Player.USA_ACCENT,false,true);
             }
         });
         imageBtnDeleteWordFromDB.setOnClickListener(new View.OnClickListener() {
@@ -125,6 +128,7 @@ public class ReciteActivity extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         wordBox.removeWordFromDatabase(word);
+                        updateWord();
                     }
                 });
                 dialog.setNegativeButton("否", new DialogInterface.OnClickListener() {
@@ -136,7 +140,6 @@ public class ReciteActivity extends Activity {
                 dialog.show();
             }
         });
-        lineReciteChoiceShadow.setVisibility(View.GONE);
         //设置选项
         int i=random.nextInt(4);
         int k=0;
@@ -151,18 +154,20 @@ public class ReciteActivity extends Activity {
     }
 
 
+    private void updateWord(){
+        getData();
+        setView();
+    }
+
+
     private void initView() {
         viewFlipper=(ViewFlipper)findViewById(R.id.flipper_recite);
-       //viewFlipper.addView(findViewById(R.id.sub_layout_recite_main));
-        //viewFlipper.addView(findViewById(R.id.sub_layout_recite_wrong));
 
         //初始化R.id.sub_layout_recite_main中的控件
         textReciteQuestion=(TextView)findViewById(R.id.text_recite_question);
         textReciteGrasp=(TextView)findViewById(R.id.text_recite_grasp);
         imageBtnPlayMusicOfWord=(ImageView)findViewById(R.id.image_btn_play_music_of_word);
         imageBtnDeleteWordFromDB=(ImageView)findViewById(R.id.image_btn_delete_word_from_db);
-        lineReciteChoiceShadow=(LinearLayout)findViewById(R.id.line_recite_choice_shadow);
-        lineReciteInvisibleLayer=(LinearLayout)findViewById(R.id.line_recite_invisible_layer);
         buttonA=(Button)findViewById(R.id.button_a);
         buttonB=(Button)findViewById(R.id.button_b);
         buttonC=(Button)findViewById(R.id.button_c);
@@ -202,14 +207,6 @@ public class ReciteActivity extends Activity {
     }
 
 
-    private void updateWord(){
-        lineReciteInvisibleLayer.setVisibility(View.VISIBLE);
-        getData();
-        setView();
-        lineReciteInvisibleLayer.setVisibility(View.GONE);
-    }
-
-
     private class SelectChoiceListener implements View.OnClickListener {
         private Button mbutton;
 
@@ -224,6 +221,7 @@ public class ReciteActivity extends Activity {
                 updateWord();
             }else {
                 wordBox.feedBack(wordInfo,false);
+                Log.d(TAG, "onClick: "+word);
                 new DownloadTask().execute();
             }
         }
@@ -284,4 +282,10 @@ public class ReciteActivity extends Activity {
         }
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+    }
 }

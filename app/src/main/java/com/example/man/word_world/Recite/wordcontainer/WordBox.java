@@ -13,6 +13,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.man.word_world.Recite.Fragment_recite;
 import com.example.man.word_world.database.DBManager;
 
 /**
@@ -34,6 +35,7 @@ public class WordBox {
 
     public static int process=GRASP_89;    //总学习进度控制变量
     public static int wordCount=0;         //在某一复习阶段背的单词数
+    private static int todayWordCount=0;//今天学习的单词数
     public static boolean processWrong=false;        //是否要开始背错误的单词
 
     public final static int STEP_1_NEWWORD1=0;
@@ -85,7 +87,7 @@ public class WordBox {
     public int getTotalLearnProgress(){
         int learnCount=0;
         int totalCount=0;
-        Cursor cursor=database.query(tableName, new String[]{"word"}, "grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=?", new String[]{"3","4","5","6","7","8","9","10"}, null, null, null);
+        Cursor cursor=database.query(tableName, new String[]{"word"}, "grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=?", new String[]{"1","2","3","4","5","6","7","8","9","10"}, null, null, null);
         learnCount=cursor.getCount();
 
         Cursor cursorTotal=database.query(tableName, new String[]{"word"}, "word like?", new String[]{"%"}, null, null, null);
@@ -103,7 +105,7 @@ public class WordBox {
     public int getWordCountOfUnlearned(){
         Cursor cursorTotal=database.query(tableName, new String[]{"word"}, "word like?", new String[]{"%"}, null, null, null);
         int totalCount=cursorTotal.getCount();
-        Cursor cursor=database.query(tableName, new String[]{"word"}, "grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=?", new String[]{"3","4","5","6","7","8","9","10"}, null, null, null);
+        Cursor cursor=database.query(tableName, new String[]{"word"}, "grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=? or grasp=?", new String[]{"1","2","3","4","5","6","7","8","9","10"}, null, null, null);
         int learnCount=cursor.getCount();
         cursor.close();
         cursorTotal.close();
@@ -277,7 +279,7 @@ public class WordBox {
         switch(processLearnNewWord){
             case STEP_1_NEWWORD1:{
                 if((wordInfo=getWordByGraspByRandom(GRASP_01,GRASP_01,UNLEARNED ))==null
-                        || wordCount>rand.nextInt(3)+9 ){//疑问：为什么不是wordCount>9？
+                        || wordCount>rand.nextInt(3)+9 || todayWordCount>= Fragment_recite.todayWordCount){//疑问：为什么不是wordCount>9？
                     processLearnNewWord=STEP_2_REVIEW_20;//rand.nextInt(3)在四个判断中都存在，它表示什么？
                     wordCount=0;
 
@@ -287,6 +289,7 @@ public class WordBox {
                     }
                 }else{
                     wordCount++;
+                    todayWordCount++;
                     return wordInfo;
                 }
             }
@@ -307,11 +310,12 @@ public class WordBox {
             }
             case STEP_3_NEWWORD2:{
                 if((wordInfo=getWordByGraspByRandom(GRASP_01,GRASP_01,UNLEARNED ))==null
-                        || wordCount>rand.nextInt(3)+9 ){
+                        || wordCount>rand.nextInt(3)+9|| todayWordCount>= Fragment_recite.todayWordCount ){
                     processLearnNewWord=STEP_4_REVIEW_6;
                     wordCount=0;
                 }else{
                     wordCount++;
+                    todayWordCount++;
                     return wordInfo;
                 }
             }
@@ -351,7 +355,7 @@ public class WordBox {
         }else{
             wordCount++;
 
-            if(wordCount%(rand.nextInt(2)+19) ==0 && wrongWordList.size()>0 ){  //错误列表中必须有单词
+            if(wordCount%(rand.nextInt(2)+19) ==0 && wrongWordList.size()>0 ){
                 processWrong=true;//疑问：没看懂上面的条件式表示什么含义
             }
             /**

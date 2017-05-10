@@ -110,7 +110,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0"
-                android:background="@android:color/transparent"
+                android:background="@drawable/btn_choose_word"
                 android:gravity="left|center"
                 android:paddingLeft="45.0dip"
                 android:singleLine="true"
@@ -142,7 +142,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0"
-                android:background="@android:color/transparent"
+                android:background="@drawable/btn_choose_word"
                 android:gravity="left|center"
                 android:paddingLeft="45.0dip"
                 android:singleLine="true"
@@ -174,7 +174,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0"
-                android:background="@android:color/transparent"
+                android:background="@drawable/btn_choose_word"
                 android:gravity="left|center"
                 android:paddingLeft="45.0dip"
                 android:singleLine="true"
@@ -206,7 +206,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0"
-                android:background="@android:color/transparent"
+                android:background="@drawable/btn_choose_word"
                 android:gravity="left|center"
                 android:paddingLeft="45.0dip"
                 android:singleLine="true"
@@ -224,57 +224,4 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/line_recite_choice_shadow"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignTop="@id/line_chocie"
-        android:layout_below="@id/image_btn_delete_word_from_db"
-        android:background="#ffe5e6e0"
-        android:gravity="bottom"
-        android:orientation="vertical"
-        android:visibility="visible"
-        android:animateLayoutChanges="true">
-
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_marginBottom="1.0dip"
-            android:layout_marginLeft="15.0dip"
-            android:layout_marginRight="15.0dip"
-            android:layout_marginTop="5.0dip"
-            android:layout_weight="1.0"
-            android:background="@drawable/layer_list_dict_item_back" />
-
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_marginBottom="1.0dip"
-            android:layout_marginLeft="15.0dip"
-            android:layout_marginRight="15.0dip"
-            android:layout_marginTop="5.0dip"
-            android:layout_weight="1.0"
-            android:background="@drawable/layer_list_dict_item_back" />
-
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_marginBottom="1.0dip"
-            android:layout_marginLeft="15.0dip"
-            android:layout_marginRight="15.0dip"
-            android:layout_marginTop="5.0dip"
-            android:layout_weight="1.0"
-            android:background="@drawable/layer_list_dict_item_back" />
-
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_marginBottom="1.0dip"
-            android:layout_marginLeft="15.0dip"
-            android:layout_marginRight="15.0dip"
-            android:layout_marginTop="5.0dip"
-            android:layout_weight="1.0"
-            android:background="@drawable/layer_list_dict_item_back" />
-    </LinearLayout>
 </RelativeLayout>

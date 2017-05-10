@@ -5,141 +5,15 @@
     android:animateLayoutChanges="true"
     android:background="#ffb2b2b2">
 
-    <com.example.man.word_world.Recite.diyview.MyProgressBar
-        android:id="@+id/progressBar"
-        style="@style/ProgressBar_Mini"
-        android:layout_width="fill_parent"
-        android:layout_height="45.0dip"
-        android:progress="0" />
-
-    <LinearLayout android:id="@+id/line_set_bar"
-        android:orientation="horizontal"
-        android:background="@android:color/transparent"
-        android:layout_width="fill_parent"
-        android:layout_height="45.0dip">
-        <ImageButton android:id="@+id/btn_back_to_general_activity"
-            android:background="@android:color/transparent"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:src="@drawable/btn_back_blue"
-            android:layout_weight="3.0" />
-        <LinearLayout android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1.0"
-            android:orientation="vertical">
-            <TextView android:id="@+id/text_recite_last_word_right_or_wrong"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:text="reciting..."
-                android:textColor="#fffefefe"
-                android:textSize="14.0dip" />
-            <TextView android:id="@+id/text_recite_info_feedback"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:singleLine="true"
-                android:textColor="#fffefefe" />
-        </LinearLayout>
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="3.0">
-            <ProgressBar android:id="@+id/progress_bar_circle_waiting_flag"
-                style="@android:style/Widget.ProgressBar.Inverse"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginBottom="6.0dip"
-                android:layout_marginTop="5.0dip"
-                android:visibility="gone" />
-            <ImageButton android:id="@+id/setting_btn"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:background="@android:color/transparent"
-                android:src="@drawable/recite_setting_press" />
-        </RelativeLayout>
-    </LinearLayout>
-
-    <LinearLayout android:id="@+id/recite_inside_setting_bar"
-        android:layout_width="fill_parent"
-        android:layout_height="45.0dip"
-        android:layout_marginBottom="5.0dip"
-        android:background="#ffb4cde6"
-        android:orientation="vertical"
-        android:visibility="gone">
-        <LinearLayout android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1.0"
-            android:background="@drawable/set_bar_back"
-            android:orientation="horizontal">
-            <LinearLayout android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:orientation="horizontal">
-                <TextView android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="1.0"
-                    android:gravity="right|center"
-                    android:paddingRight="10.0dip"
-                    android:text="声音"
-                    android:textColor="#ff231cb2"
-                    android:textSize="13.0dip" />
-                <ImageButton android:id="@+id/btn_isphonetic"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="1.0"
-                    android:background="@android:color/transparent"
-                    android:paddingBottom="10.0dip"
-                    android:paddingRight="35.0dip"
-                    android:paddingTop="10.0dip"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/btn_on" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1.0"
-                android:orientation="horizontal">
-                <TextView android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="1.0"
-                    android:gravity="right|center"
-                    android:paddingRight="10.0dip"
-                    android:text="动画"
-                    android:textColor="#ff231cb2"
-                    android:textSize="13.0dip" />
-                <ImageButton android:id="@+id/btn_isthinking"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="1.0"
-                    android:background="@android:color/transparent"
-                    android:paddingBottom="10.0dip"
-                    android:paddingRight="35.0dip"
-                    android:paddingTop="10.0dip"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/btn_on" />
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
-
     <ViewFlipper android:id="@+id/flipper_recite"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_below="@id/line_set_bar"
         android:background="#ffc2c2c2">
         <include android:id="@+id/sub_layout_recite_main"
             layout="@layout/recite_main_layout" />
         <include android:id="@+id/sub_layout_recite_wrong"
             layout="@layout/activity_wong_layout" />
     </ViewFlipper>
-
-    <LinearLayout android:id="@+id/line_recite_invisible_layer"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@id/line_set_bar"
-        android:orientation="horizontal"
-        android:visibility="gone" />
 
 </RelativeLayout>
