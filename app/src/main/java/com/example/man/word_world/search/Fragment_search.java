@@ -3,11 +3,8 @@ package com.example.man.word_world.search;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -22,18 +19,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.man.word_world.R;
 import com.example.man.word_world.database.DBManager;
 import com.example.man.word_world.search.model.Bean;
 import com.example.man.word_world.search.util.CommonAdapter;
 import com.example.man.word_world.search.util.ViewHolder;
-import com.example.man.word_world.search.wordcontainer.Dict;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.Manifest;
 
 /**
  * Created by man on 2016/11/27.
@@ -53,7 +47,7 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
     /**
      * 返回按钮
      */
-    private Button btnBack;
+    private Button btnSearch;
 
     /**
      * 搜索结果列表view
@@ -96,6 +90,7 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
 
     public Fragment_search(){}
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search_layout,container,false);
@@ -103,11 +98,13 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
         return view;
     }
 
+
     @Override
     public void onStart(){
         super.onStart();
         initViews();
     }
+
 
     /**
      * 初始化数据
@@ -124,6 +121,7 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
         //getResultData(null);
     }
 
+
     /**
      * 获取单词 数据
      */
@@ -137,6 +135,7 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
         }
         cursor.close();
     }
+
 
     /**
      * 获取搜索历史data 和adapter
@@ -166,6 +165,7 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
         }
         cursor.close();
     }
+
 
     /**
      * 获取自动补全data 和adapter
@@ -198,6 +198,7 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
         }
     }
 
+
     /**
      * 初始化视图
      */
@@ -205,21 +206,21 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
         //注册控件
         etInput=(EditText)getActivity().findViewById(R.id.search_et_input);
         ivDelete=(ImageView)getActivity().findViewById(R.id.search_iv_delete);
-        btnBack=(Button)getActivity().findViewById(R.id.search_btn_back);
+        btnSearch =(Button)getActivity().findViewById(R.id.search_btn);
         lvResults = (ListView) getActivity().findViewById(R.id.main_lv_search_results);
         lvResults.setAdapter(historyAdapter);
 
         //设置点击事件
         ivDelete.setOnClickListener(this);
-        btnBack.setOnClickListener(this);
+        btnSearch.setOnClickListener(this);
 
         //设置监听
         etInput.addTextChangedListener(new EditChangedListener());
         etInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH && !etInput.getText().toString().equals("")) {
-                    autoCompleteSearching(etInput.getText().toString().trim());
+                if (actionId == EditorInfo.IME_ACTION_SEARCH && !getWord().equals("")) {
+                    autoCompleteSearching(getWord());
                 }
                 return true;
             }
@@ -237,6 +238,7 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
         });
     }
 
+
     /**
      * 通知监听者 进行搜索操作
      * @param text
@@ -247,26 +249,23 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 
         //搜索
-        onSearch(text);
+        Search(text);
     }
+
 
     private void historySearching(String text){
         //搜索
-        onSearch(text);
+        Search(text);
     }
 
-    private void onRefreshHistoryData(String text){
+
+    private void Search(String text) {
+        //将搜索的单词添加到搜索历史表中
         dbManager.refreshHistoryData(text);
         getHistoryData();
+        DictActivity.actionStart(getActivity(),text);
     }
 
-    private void onSearch(String text) {
-        //将搜索的单词添加到搜索历史表中
-        onRefreshHistoryData(text);
-        Intent intent=new Intent(getActivity(),DictActivity.class);
-        intent.putExtra("word",text);
-        startActivity(intent);
-    }
 
     @Override
     public void onClick(View view) {
@@ -276,10 +275,14 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
                 lvResults.setAdapter(historyAdapter);
                 ivDelete.setVisibility(View.GONE);
                 break;
-            case R.id.search_btn_back:
+            case R.id.search_btn:
+                if (!getWord().equals("")){
+                    Search(getWord());
+                }
                 break;
         }
     }
+
 
     private class EditChangedListener implements TextWatcher {
         @Override
@@ -292,22 +295,27 @@ public class Fragment_search extends Fragment implements View.OnClickListener {
             if (!"".equals(charSequence.toString())) {
                 ivDelete.setVisibility(View.VISIBLE);
                 //更新autoComplete数据
-                onRefreshAutoComplete(charSequence + "");
+                onRefreshAutoComplete(charSequence.toString());
             } else {
                 ivDelete.setVisibility(View.GONE);
                 lvResults.setAdapter(historyAdapter);
             }
+        }
+        private void onRefreshAutoComplete(String text) {
+            //更新数据
+            lvResults.setAdapter(autoCompleteAdapter);
+            getAutoCompleteData(text);
         }
 
         @Override
         public void afterTextChanged(Editable s) {
 
         }
+
     }
 
-    private void onRefreshAutoComplete(String text) {
-        //更新数据
-        lvResults.setAdapter(autoCompleteAdapter);
-        getAutoCompleteData(text);
+
+    private String getWord(){
+        return etInput.getText().toString().trim();
     }
 }

@@ -100,7 +100,6 @@ public class Dict {
             if (cursor != null)
                 cursor.close();
         }
-
     }
 
     //从单词库中获得某个单词的信息，如果词库中没有改单词，那么返回null

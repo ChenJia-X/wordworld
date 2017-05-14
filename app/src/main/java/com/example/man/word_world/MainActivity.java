@@ -8,7 +8,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.example.man.word_world.Recite.Fragment_recite;
-import com.example.man.word_world.danciben.Fragment_wordsbook;
+import com.example.man.word_world.danciben.Fragment_wordList;
 import com.example.man.word_world.search.Fragment_search;
 import com.example.man.word_world.user.Fragment_user;
 
@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
     //Fragment Object
     private Fragment_search fg1;
-    private Fragment_wordsbook fg2;
+    private Fragment_wordList fg2;
     private Fragment_recite fg3;
     private Fragment_user fg4;
     private FragmentManager fManager;
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         if(fg1 != null)fragmentTransaction.hide(fg1);
         if(fg2 != null)fragmentTransaction.hide(fg2);
         if(fg3 != null)fragmentTransaction.hide(fg3);
-        if(fg4 != null)fragmentTransaction.hide(fg4);
+        //if(fg4 != null)fragmentTransaction.hide(fg4);
     }
 
     @Override
@@ -58,15 +58,16 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                     fTransaction.show(fg1);
                 }
                 break;
-            case R.id.rb_study:
+            case R.id.rb_wordList:
                 if(fg2 == null){
-                    fg2 = new Fragment_wordsbook();
+                    fg2 = new Fragment_wordList();
                     fTransaction.add(R.id.ly_content,fg2);
                 }else{
+                    fg2.getData();
                     fTransaction.show(fg2);
                 }
                 break;
-            case R.id.rb_test:
+            case R.id.rb_recite:
                 if(fg3 == null){
                     fg3 = new Fragment_recite();
                     fTransaction.add(R.id.ly_content,fg3);
@@ -74,14 +75,14 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                     fTransaction.show(fg3);
                 }
                 break;
-            case R.id.rb_setting:
+            /*case R.id.rb_setting:
                 if(fg4 == null){
                     fg4 = new Fragment_user();
                     fTransaction.add(R.id.ly_content,fg4);
                 }else{
                     fTransaction.show(fg4);
                 }
-                break;
+                break;*/
         }
         fTransaction.commit();
     }

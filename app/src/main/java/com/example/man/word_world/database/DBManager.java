@@ -54,7 +54,7 @@ public class DBManager {
             +"learned int)";
 
     //单词本
-    private static final String CREATE_WORDS_LIST ="create table if not exists wordsList("
+    private static final String CREATE_WORDS_LIST ="create table if not exists wordList("
             +"word text,"
             +"interpret text,"
             +"right int,"
@@ -84,8 +84,8 @@ public class DBManager {
         database.execSQL(CREATE_RECITE_DATA);
     }
 
-    public Cursor getWordsBookData(){
-        String sql="select word from wordsList";
+    public Cursor getWordListData(){
+        String sql="select word from wordList";
         Cursor cursor=database.rawQuery(sql,null);
         return cursor;
     }
@@ -133,6 +133,11 @@ public class DBManager {
         cursor.close();
     }
 
+
+    public void deleteFromWordList(String text){
+        database.delete("wordList","word=?",new String[]{text});
+    }
+
     /**
      * 将单词添加到单词本的表里去
      * @param word
@@ -140,14 +145,14 @@ public class DBManager {
      * @param OverWrite
      * @return
      */
-    public Boolean insertWordInfoToWordsList(String word, String interpret, Boolean OverWrite){
-        Cursor cursor = null;
+    public Boolean insertWordInfoToWordList(String word, String interpret, Boolean OverWrite){
         if(database ==null){
             database=getDatabase();
         }
-        cursor =database.rawQuery("select word from wordsList where word=?",new String[]{word});
+        Cursor cursor =database.rawQuery("select word from wordList where word=?",new String[]{word});
         if (cursor.moveToNext()){
-            return true;
+            cursor.close();
+            return false;
         }else {
             ContentValues values = new ContentValues();
             values.put("word", word);
@@ -156,7 +161,7 @@ public class DBManager {
             values.put("wrong", 0);
             values.put("grasp", 0);
             values.put("learned", 0);
-            database.insert("glossary", null, values);
+            database.insert("wordList", null, values);
             cursor.close();
             return true;
         }

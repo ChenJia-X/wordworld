@@ -3,14 +3,14 @@ package com.example.man.word_world.search;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -37,9 +37,6 @@ public class DictActivity extends Activity{
     public ImageButton imageBtnDictHornEng=null;
     public ImageButton imageBtnDictHornUSA=null;
 
-    public Button buttonDictDialogConfirm=null;
-    public Button buttonDictDialogCancel=null;
-
     public DBManager dbManager=null;
 
     public Dict dict=null;
@@ -50,6 +47,11 @@ public class DictActivity extends Activity{
 
     public Handler dictHandler=null;
 
+    public static void actionStart(Context context,String word){
+        Intent intent=new Intent(context,DictActivity.class);
+        intent.putExtra("word",word);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,62 +199,34 @@ public class DictActivity extends Activity{
         public void showAddDialog(){
             if(searchedWord==null)
                 return;
-            //使用R.style.Translucent_NoTitle来解决黑色背景问题
-            AlertDialog dialog=new AlertDialog.Builder(DictActivity.this,R.style.Translucent_NoTitle).create();
+            AlertDialog.Builder dialog=new AlertDialog.Builder(DictActivity.this);
+            dialog.setMessage("把"+searchedWord+"添加到单词本?");
+            dialog.setPositiveButton("是", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    insertWordToGlossary();
+                }
+                public void insertWordToGlossary(){
+                    if(w==null || w.getInterpret().equals("")){
+                        Toast.makeText(DictActivity.this, "单词格式错误", Toast.LENGTH_SHORT).show();
+                        return;                   //若是不是有效单词，那么将不能添加到单词本
+                    }
+                    boolean isSuccess=dbManager.insertWordInfoToWordList(searchedWord, w.getInterpret(), false);
+                    if(isSuccess){
+                        Toast.makeText(DictActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(DictActivity.this, "单词已存在", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            dialog.setNegativeButton("否", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
             dialog.show();
-            Window window=dialog.getWindow();
-            window.setContentView(R.layout.dialog_if_layout);
-            buttonDictDialogConfirm=(Button)window.findViewById(R.id.dialog_confirm);
-            buttonDictDialogCancel=(Button)window.findViewById(R.id.dialog_cancel);
-            buttonDictDialogConfirm.setOnClickListener(new BDictDialogConfirmClickLis(dialog));
-            buttonDictDialogCancel.setOnClickListener(new BDictDialogCancelClickLis(dialog));
-            TextView dialogText=(TextView)window.findViewById(R.id.dialog_text);
-            dialogText.setText("把"+searchedWord+"添加到单词本?");
         }
-
-    }
-
-
-    class BDictDialogConfirmClickLis implements OnClickListener{
-
-        AlertDialog dialog=null;
-        public BDictDialogConfirmClickLis(AlertDialog dialog){
-            this.dialog=dialog;
-        }
-        @Override
-        public void onClick(View arg0) {
-            // TODO Auto-generated method stub
-            insertWordToGlossary();
-            dialog.cancel();
-        }
-
-        public void insertWordToGlossary(){
-            if(w==null || w.getInterpret().equals("")){
-                Toast.makeText(DictActivity.this, "单词格式错误", Toast.LENGTH_SHORT).show();
-                return;                   //若是不是有效单词，那么将不能添加到单词本
-            }
-            boolean isSuccess=dbManager.insertWordInfoToWordsList(searchedWord, w.getInterpret(), false);
-            if(isSuccess){
-                Toast.makeText(DictActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(DictActivity.this, "单词已存在", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-
-    class BDictDialogCancelClickLis implements OnClickListener{
-        AlertDialog dialog=null;
-        public BDictDialogCancelClickLis(AlertDialog dialog){
-            this.dialog=dialog;
-        }
-
-        @Override
-        public void onClick(View arg0) {
-            // TODO Auto-generated method stub
-            dialog.cancel();
-        }
-
     }
 
 

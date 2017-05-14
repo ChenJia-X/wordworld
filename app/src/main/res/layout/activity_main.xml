@@ -46,22 +46,22 @@
             android:text="@string/tab_menu_search" />
 
         <RadioButton
-            android:id="@+id/rb_study"
+            android:id="@+id/rb_wordList"
             style="@style/tab_menu_item"
             android:drawableTop="@drawable/tab_menu_study"
             android:text="@string/tab_menu_study" />
 
         <RadioButton
-            android:id="@+id/rb_test"
+            android:id="@+id/rb_recite"
             style="@style/tab_menu_item"
             android:drawableTop="@drawable/tab_menu_test"
             android:text="@string/tab_menu_test"/>
 
-        <RadioButton
+        <!--<RadioButton
             android:id="@+id/rb_setting"
             style="@style/tab_menu_item"
             android:drawableTop="@drawable/tab_menu_setting"
-            android:text="@string/tab_menu_setting" />
+            android:text="@string/tab_menu_setting" />-->
 
 
     </RadioGroup>
