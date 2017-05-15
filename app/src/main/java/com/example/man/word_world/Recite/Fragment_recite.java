@@ -90,6 +90,13 @@ public class Fragment_recite extends Fragment {
         super.onStart();
         //检测是否创建过学习计划
         dbManager=new DBManager(getActivity());
+        getData();
+        initViews();
+        setViews();
+        cursor.close();
+    }
+
+    private void getData() {
         cursor=dbManager.getReciteData();
         if (cursor.moveToNext() && cursor!=null){//对cursor的任何操作，一定不要忘记添加这句，否则会抛出异常闪退
             courseName=cursor.getString(cursor.getColumnIndex("course_name"));
@@ -101,19 +108,8 @@ public class Fragment_recite extends Fragment {
             todayWordCount=totalWords/interdays;
         }
         wordBox=new WordBox(getActivity(),"glossary");
-        initViews();
-        setViews();
-        cursor.close();
     }
 
-    private void setViews() {
-        textGeneralTodayWords.setText("今日需要学习"+todayWordCount+"个单词");
-        textGeneralLearnWords.setText("已学习   "+(totalWords-wordBox.getWordCountOfUnlearned())+"个");
-        textGeneralGraspWords.setText("已掌握   "+wordBox.getWordCountByGrasp(10,1)+"个");
-        textGeneralNeedLearnWords.setText("未学习   "+wordBox.getWordCountOfUnlearned()+"个");
-        textGeneralCourse.setText(courseName);
-        reciteProgressBar.setProgress(wordBox.getTotalLearnProgress());
-    }
 
     private void initViews() {
         buttonSetInsertLocalCet4 = (Button)getActivity().findViewById(R.id.button_set_insert_local_res_cet4);
@@ -149,6 +145,17 @@ public class Fragment_recite extends Fragment {
         else editTime.setText("请设置完成时间！");
         editTime.setInputType(InputType.TYPE_NULL);//禁止修改
     }
+
+
+    private void setViews() {
+        textGeneralTodayWords.setText("今日需要学习"+todayWordCount+"个单词");
+        textGeneralLearnWords.setText("已学习   "+(totalWords-wordBox.getWordCountOfUnlearned())+"个");
+        textGeneralGraspWords.setText("已掌握   "+wordBox.getWordCountByGrasp(10,1)+"个");
+        textGeneralNeedLearnWords.setText("未学习   "+wordBox.getWordCountOfUnlearned()+"个");
+        textGeneralCourse.setText(courseName);
+        reciteProgressBar.setProgress(wordBox.getTotalLearnProgress());
+    }
+
 
     class BsetInsertLocalGlossaryClickListener implements View.OnClickListener {
         private int mglossaryResId;
@@ -266,6 +273,9 @@ public class Fragment_recite extends Fragment {
                             deadlineMonth=monthOfYear;
                             deadlineDay=dayOfMonth;
                             calculateTime();
+                            //更新数据
+                            getData();
+                            setViews();
                         }
                     }
                     , calendar.get(Calendar.YEAR)
