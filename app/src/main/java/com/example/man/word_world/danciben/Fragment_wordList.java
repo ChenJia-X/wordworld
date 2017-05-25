@@ -33,7 +33,7 @@ public class Fragment_wordList extends Fragment{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_wordsbook,container,false);
+        View view = inflater.inflate(R.layout.fragment_word_list,container,false);
         getData();
         return view;
     }

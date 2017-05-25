@@ -166,30 +166,26 @@ public class Fragment_recite extends Fragment {
         @Override
         public void onClick(View v) {
             glossaryRawResourceID=mglossaryResId;
-            switch (glossaryRawResourceID){
-                case R.raw.cet4:
-                    courseName="CET4";
-                    totalWords=3662;
-                    break;
-                case R.raw.cet6:
-                    courseName="CET6";
-                    totalWords=2083;
-                    break;
-                case R.raw.gre:
-                    courseName="GRE";
-                    totalWords=2985;
-                    break;
-            }
-            showInsertAlertDialog();//MODE1_INSERT_FROM_SDCARD 参数是猜测的不一定对
-        }
-
-        public void showInsertAlertDialog() {
             AlertDialog.Builder dialog=new AlertDialog.Builder(getActivity());
             dialog.setMessage("覆盖词库原有记录？");
             dialog.setCancelable(true);
             dialog.setPositiveButton("是",new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    switch (glossaryRawResourceID){
+                        case R.raw.cet4:
+                            courseName="CET4";
+                            totalWords=3662;
+                            break;
+                        case R.raw.cet6:
+                            courseName="CET6";
+                            totalWords=2083;
+                            break;
+                        case R.raw.gre:
+                            courseName="GRE";
+                            totalWords=2985;
+                            break;
+                    }
                     new UpdateGlossaryTask().execute();
                 }
             });
@@ -197,13 +193,10 @@ public class Fragment_recite extends Fragment {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    courseName="";
-                    totalWords=0;
                 }
             });
             dialog.show();
         }
-
     }
 
     class UpdateGlossaryTask extends AsyncTask<Void,Integer,Boolean>{
