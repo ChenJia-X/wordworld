@@ -3,6 +3,7 @@ package com.example.man.word_world.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.man.word_world.R;
@@ -136,6 +137,30 @@ public class DBManager {
 
     public void deleteFromWordList(String text){
         database.delete("wordList","word=?",new String[]{text});
+    }
+
+
+    public Boolean insertWordfromDBToGlossary(String tableName){
+        if (database==null) database=getDatabase();
+        Cursor cursor;
+        try{
+            cursor=database.query(tableName,null,null,null,null,null,null);
+            if (cursor.getCount()!=0) database.delete("glossary",null,null);
+            //开启事务，优化插入速度
+            database.beginTransaction();
+            while (cursor.moveToNext()){
+                String word=cursor.getString(cursor.getColumnIndex("word"));
+                String interpret=cursor.getString(cursor.getColumnIndex("interpret"));
+                insertWordInfoToGlossary(word,interpret,true);
+            }
+            cursor.close();
+            database.setTransactionSuccessful();
+            database.endTransaction();
+            return true;
+        }catch (SQLException e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**

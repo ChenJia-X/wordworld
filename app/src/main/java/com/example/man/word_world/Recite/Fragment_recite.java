@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -241,10 +242,11 @@ public class Fragment_recite extends Fragment {
          */
         public void updateGlossary() {
             //从Raw中读取对应的txt文件
-            InputStream inputStream = getResources().openRawResource(glossaryRawResourceID);
+            /*InputStream inputStream = getResources().openRawResource(glossaryRawResourceID);
             FileUtils fileUtils=new FileUtils();
             WordListParser wordListParser=new WordListParser(getActivity(),"glossary");
-            wordListParser.parse(fileUtils.getStringFromInputStream(inputStream));
+            wordListParser.parse(fileUtils.getStringFromInputStream(inputStream));*/
+            dbManager.insertWordfromDBToGlossary(courseName.toLowerCase());
         }
     }
 
